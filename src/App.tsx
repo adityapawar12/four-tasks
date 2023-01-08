@@ -1,9 +1,37 @@
+import React from "react";
 import styles from "./App.module.css";
+import { Route, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import NoMatch from "./components/NoMatch";
+import Login from "./components/Login";
+import { AuthContext, AuthProvider } from "./context/Auth";
+import RequireAuth from "./components/RequireAuth";
 
 const App = () => {
   return (
     <div className={styles.mainDiv}>
-      <h1 className="text-3xl font-bold p-0 m-0">Four Tasks</h1>
+      <AuthProvider>
+        <React.Suspense fallback={"Loading..."}>
+          <Routes>
+            {/* PAGES WITH NO AUTH REQ */}
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* PAGES WITH AUTH REQ */}
+            <Route
+              path="/home"
+              element={
+                <RequireAuth>
+                  <Home />
+                </RequireAuth>
+              }
+            />
+
+            {/* NO MATCHING ROUTE */}
+            <Route path="*" element={<NoMatch />} />
+          </Routes>
+        </React.Suspense>
+      </AuthProvider>
     </div>
   );
 };
