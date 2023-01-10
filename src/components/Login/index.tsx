@@ -1,22 +1,22 @@
-import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+
 import TextError from "../TextError";
 import { supabase } from "../../supabaseClient";
-import { useNavigate } from "react-router";
-import styles from "./index.module.css";
+
 import { useAuth } from "../../context/Auth";
+
+import styles from "./index.module.css";
 
 const Login = () => {
   const navigate = useNavigate();
+
   const userCont = useAuth();
 
-  useEffect(() => {
-    console.log("the login user >>> ", userCont?.user);
-  }, []);
-
   const getData = async (user: any) => {
-    let { data, error } = await supabase
+    let { data } = await supabase
       .from("users")
       .select("*")
       .eq("email", user.email);
@@ -36,19 +36,15 @@ const Login = () => {
   });
 
   const onSubmit = (values: any, onSubmitProps: any) => {
-    console.log("FORM VALUES >> > > ", values);
     getData(values)
       .then((res: any) => {
-        console.log("res >>> ", res);
-        if (res.length < 1) {
-          console.log("Email not registered!");
+        if (res && res.length < 1) {
           return;
         }
         if (
           res[0].email === values.email &&
           res[0].password === values.password
         ) {
-          console.log("Email exists and and password is also right.");
           let userLoginInfo = res[0];
           delete userLoginInfo.password;
           localStorage.setItem("userLoginInfo", JSON.stringify(userLoginInfo));

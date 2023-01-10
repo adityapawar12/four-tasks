@@ -1,17 +1,33 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../context/Auth";
+
 import styles from "./index.module.css";
 
 const RequireAuth = ({ children }: any) => {
   const auth = useAuth();
-  const location = useLocation();
 
-  if (!auth?.user && !localStorage.getItem("userLoginInfo")) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userD: any = localStorage.getItem("userLoginInfo");
+
+    if (userD && JSON.parse(userD)) {
+      navigate("/home");
+      auth?.updateUser(JSON.parse(userD));
+    }
+  }, []);
+
+  if (
+    location.pathname !== "/login" &&
+    !auth?.user &&
+    !localStorage.getItem("userLoginInfo")
+  ) {
     return <Navigate to="/login" state={{ path: location.pathname }} />;
   }
-  const userD: string = localStorage.getItem("userLoginInfo") as string;
-  auth?.updateUser(JSON.parse(userD));
 
   return <>{children}</>;
 };
