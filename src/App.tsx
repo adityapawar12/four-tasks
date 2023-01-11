@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import RequireAuth from "./components/RequireAuth";
 
 import { AuthProvider } from "./context/Auth";
+import { TaskTypeProvider } from "./context/TaskType";
 
 import styles from "./App.module.css";
 
@@ -14,37 +15,39 @@ const App = () => {
   return (
     <div>
       <AuthProvider>
-        <React.Suspense fallback={"Loading..."}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <RequireAuth>
-                  <Login />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <RequireAuth>
-                  <Login />
-                </RequireAuth>
-              }
-            />
+        <TaskTypeProvider>
+          <React.Suspense fallback={"Loading..."}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <RequireAuth>
+                    <Login />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <RequireAuth>
+                    <Login />
+                  </RequireAuth>
+                }
+              />
 
-            <Route
-              path="/home"
-              element={
-                <RequireAuth>
-                  <Home />
-                </RequireAuth>
-              }
-            />
+              <Route
+                path="/home"
+                element={
+                  <RequireAuth>
+                    <Home />
+                  </RequireAuth>
+                }
+              />
 
-            <Route path="*" element={<NoMatch />} />
-          </Routes>
-        </React.Suspense>
+              <Route path="*" element={<NoMatch />} />
+            </Routes>
+          </React.Suspense>
+        </TaskTypeProvider>
       </AuthProvider>
     </div>
   );

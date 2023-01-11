@@ -1,3 +1,4 @@
+import AddTask from "../AddTask";
 import Header from "../Header";
 
 import styles from "./index.module.css";
@@ -7,9 +8,10 @@ const Home = () => {
     <>
       <div className="relative">
         <div className=" mb-16">
-          <Header></Header>
+          <Header />
         </div>
       </div>
+      <AddTask />
     </>
   );
 };
