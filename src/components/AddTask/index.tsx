@@ -10,6 +10,8 @@ import { FaPlus } from "react-icons/fa";
 Modal.setAppElement("#root");
 const AddTask = () => {
   const [isAddTaskPopupOpen, setIsAddTaskPopupOpen] = useState<boolean>(false);
+  const [isAddTaskInputFieldOpen, setIsAddTaskInputFieldOpen] =
+    useState<boolean>(false);
   const taskTypeContext = useTaskType();
 
   const customStyles = {
@@ -26,6 +28,26 @@ const AddTask = () => {
       boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
       border: "0",
       borderRadius: "1.5rem",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+
+  const customStylesInput = {
+    overlay: {
+      background: "rgba(255, 255, 255, 0.2)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      width: "25rem",
+      marginRight: "-50%",
+      padding: "0px 10px",
+      boxShadow:
+        "0 1px 2px 0 rgba(60,64,67,0.302),0 2px 6px 2px rgba(60,64,67,0.149)",
+      border: "0",
+      borderRadius: "0.5rem",
       transform: "translate(-50%, -50%)",
     },
   };
@@ -57,6 +79,7 @@ const AddTask = () => {
               setIsAddTaskPopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
+              setIsAddTaskInputFieldOpen(true);
             }}
             className="w-1/2 h-full inline-block bg-violet-800 rounded-tl-3xl  text-white p-2 border-4 border-white"
           >
@@ -75,6 +98,7 @@ const AddTask = () => {
               setIsAddTaskPopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
+              setIsAddTaskInputFieldOpen(true);
             }}
             className="w-1/2 h-full inline-block bg-violet-600 rounded-tr-3xl  text-white p-2 border-4 border-white"
           >
@@ -96,6 +120,7 @@ const AddTask = () => {
               setIsAddTaskPopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
+              setIsAddTaskInputFieldOpen(true);
             }}
             className="w-1/2 h-full inline-block bg-violet-600 rounded-bl-3xl  text-white p-2 border-4 border-white"
           >
@@ -114,6 +139,7 @@ const AddTask = () => {
               setIsAddTaskPopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
+              setIsAddTaskInputFieldOpen(true);
             }}
             className="w-1/2 h-full inline-block bg-violet-400  rounded-br-3xl  text-white p-2 border-4 border-white"
           >
@@ -126,6 +152,31 @@ const AddTask = () => {
               </div>
             </div>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isAddTaskInputFieldOpen}
+        onRequestClose={() => {
+          setIsAddTaskInputFieldOpen(false);
+        }}
+        shouldCloseOnOverlayClick={true}
+        style={customStylesInput}
+      >
+        <div className="flex flex-col p-3">
+          <input
+            type="text"
+            className="p-1 basis-full outline-none my-1 text-lg"
+            placeholder="Add Title"
+          />
+          <textarea
+            name="description"
+            id=""
+            className="p-1 basis-full outline-none resize-none my-1 text-md"
+            placeholder="Add Description"
+            cols={30}
+            rows={10}
+          ></textarea>
         </div>
       </Modal>
 
