@@ -2,7 +2,7 @@ import SharedComponents from "../SharedComponents";
 
 import styles from "./index.module.css";
 
-const Home = () => {
+const Notes = () => {
   return (
     <>
       <SharedComponents
@@ -15,4 +15,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Notes;

@@ -1,47 +1,45 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
-interface TaskTypeContextInterface {
+interface TaskTypeInterface {
   important: boolean;
   urgent: boolean;
-  setImpUrg(): any;
-  setImpNotUrg(): any;
-  setNotImpUrg(): any;
-  setNotImpNotUrg(): any;
+}
+
+interface TaskTypeContextInterface {
+  taskType: TaskTypeInterface | null;
+  setImpUrg(): void;
+  setImpNotUrg(): void;
+  setNotImpUrg(): void;
+  setNotImpNotUrg(): void;
 }
 
 export const TaskTypeContext = createContext<TaskTypeContextInterface | null>(
   null
 );
 
-export const TaskTypeProvider = ({ children }: any) => {
-  const [taskType, setTaskType] = useState<TaskTypeContextInterface | null>(
-    null
-  );
-
-  useEffect(() => {
-    console.log("THE TASK TYPE >>>>>> ", taskType);
-  }, [taskType]);
+export const TaskTypeProvider = ({ children }: { children: JSX.Element }) => {
+  const [taskType, setTaskType] = useState<TaskTypeInterface | null>(null);
 
   const setImpUrg = () => {
-    let obj: any = { important: true, urgent: true };
+    let obj: TaskTypeInterface = { important: true, urgent: true };
     setTaskType(obj);
     return obj;
   };
 
   const setImpNotUrg = () => {
-    let obj: any = { important: true, urgent: false };
+    let obj: TaskTypeInterface = { important: true, urgent: false };
     setTaskType(obj);
     return obj;
   };
 
   const setNotImpUrg = () => {
-    let obj: any = { important: false, urgent: true };
+    let obj: TaskTypeInterface = { important: false, urgent: true };
     setTaskType(obj);
     return obj;
   };
 
   const setNotImpNotUrg = () => {
-    let obj: any = { important: false, urgent: false };
+    let obj: TaskTypeInterface = { important: false, urgent: false };
     setTaskType(obj);
     return obj;
   };
@@ -49,8 +47,7 @@ export const TaskTypeProvider = ({ children }: any) => {
   return (
     <TaskTypeContext.Provider
       value={{
-        important: true,
-        urgent: true,
+        taskType,
         setImpUrg,
         setImpNotUrg,
         setNotImpUrg,

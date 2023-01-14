@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-
 import TextError from "../TextError";
 import { supabase } from "../../supabaseClient";
+import { AuthUserInterface, useAuth } from "../../context/Auth";
 
-import { useAuth } from "../../context/Auth";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 import styles from "./index.module.css";
 
@@ -15,27 +14,27 @@ const Login = () => {
 
   const userCont = useAuth();
 
-  const getData = async (user: any) => {
+  const getData = async (user: AuthUserInterface) => {
     let { data } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", user.email);
+      .from(`users`)
+      .select(`*`)
+      .eq(`email`, user.email);
     return data;
   };
 
-  let initialValues = {
-    email: "",
-    password: "",
+  let initialValues: AuthUserInterface = {
+    email: ``,
+    password: ``,
   };
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .email("Invalid Email Format!")
-      .required("Email is required!"),
-    password: Yup.string().required("Password is required!"),
+      .email(`Invalid Email Format!`)
+      .required(`Email is required!`),
+    password: Yup.string().required(`Password is required!`),
   });
 
-  const onSubmit = (values: any, onSubmitProps: any) => {
+  const onSubmit = (values: AuthUserInterface, onSubmitProps: any) => {
     getData(values)
       .then((res: any) => {
         if (res && res.length < 1) {
@@ -47,16 +46,14 @@ const Login = () => {
         ) {
           let userLoginInfo = res[0];
           delete userLoginInfo.password;
-          localStorage.setItem("userLoginInfo", JSON.stringify(userLoginInfo));
+          localStorage.setItem(`userLoginInfo`, JSON.stringify(userLoginInfo));
           onSubmitProps.setSubmitting(false);
           onSubmitProps.resetForm();
           userCont?.login(userLoginInfo);
-          navigate("/home");
+          navigate(`/home`);
         }
       })
-      .catch((err) => {
-        console.log("err >>> ", err);
-      });
+      .catch((err) => {});
   };
 
   return (
@@ -67,11 +64,13 @@ const Login = () => {
         <div
           className={`${styles.mainSvgPatternOpp} text-center shadow-lg shadow-black text-slate-600 h-4/5 w-full sm:w-1/2 sm:h-screen`}
         >
-          <div className="flex flex-col justify-start sm:justify-center items-stretch h-full">
-            <div className="basis-auto mb-2">
-              <h4 className="font-semibold py-2 text-2xl">Login</h4>
+          <div
+            className={`flex flex-col justify-start sm:justify-center items-stretch h-full`}
+          >
+            <div className={`basis-auto mb-2`}>
+              <h4 className={`font-semibold py-2 text-2xl`}>Login</h4>
             </div>
-            <div className="basis-auto w-auto">
+            <div className={`basis-auto w-auto`}>
               <div>
                 <Formik
                   initialValues={initialValues}
@@ -83,52 +82,52 @@ const Login = () => {
                     return (
                       <div>
                         <Form>
-                          <div className="flex flex-col mb-3 w-full">
-                            <div className="basis-auto text-start px-7">
-                              <label htmlFor="email">Email</label>
+                          <div className={`flex flex-col mb-3 w-full`}>
+                            <div className={`basis-auto text-start px-7`}>
+                              <label htmlFor={`email`}>Email</label>
                             </div>
-                            <div className="basis-auto text-start px-7">
+                            <div className={`basis-auto text-start px-7`}>
                               <Field
-                                type={"email"}
-                                className="border-2 w-full p-2 rounded-sm"
-                                id="email"
-                                name="email"
-                                placeholder="Email"
+                                type={`email`}
+                                className={`border-2 w-full p-2 rounded-sm`}
+                                id={`email`}
+                                name={`email`}
+                                placeholder={`Email`}
                               />
                             </div>
-                            <div className="basis-auto text-start">
+                            <div className={`basis-auto text-start`}>
                               <ErrorMessage
-                                name="email"
+                                name={`email`}
                                 component={TextError}
                               />
                             </div>
                           </div>
 
-                          <div className="flex flex-col mb-3">
-                            <div className="basis-auto text-start px-7">
-                              <label htmlFor="password">Password</label>
+                          <div className={`flex flex-col mb-3`}>
+                            <div className={`basis-auto text-start px-7`}>
+                              <label htmlFor={`password`}>Password</label>
                             </div>
-                            <div className="basis-auto text-start px-7">
+                            <div className={`basis-auto text-start px-7`}>
                               <Field
-                                type={"password"}
-                                className="border-2 w-full p-2 rounded-sm"
-                                id="password"
-                                name="password"
-                                placeholder="Password"
+                                type={`password`}
+                                className={`border-2 w-full p-2 rounded-sm`}
+                                id={`password`}
+                                name={`password`}
+                                placeholder={`Password`}
                               />
                             </div>
-                            <div className="basis-auto text-start">
+                            <div className={`basis-auto text-start`}>
                               <ErrorMessage
-                                name="password"
+                                name={`password`}
                                 component={TextError}
                               />
                             </div>
                           </div>
 
-                          <div className="flex flex-row justify-center my-2">
+                          <div className={`flex flex-row justify-center my-2`}>
                             <button
-                              className="bg-cyan-500 text-white p-2 rounded-sm"
-                              type="submit"
+                              className={`bg-cyan-500 text-white p-2 rounded-sm`}
+                              type={`submit`}
                               disabled={
                                 !formik.dirty &&
                                 !formik.isValid &&
