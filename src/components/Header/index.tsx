@@ -3,11 +3,14 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../context/Auth";
 
 import styles from "./index.module.css";
+import { useSideNav } from "../../context/SideNav";
+import { FaBars } from "react-icons/fa";
 
 const Header = () => {
   const navigate = useNavigate();
 
   const userCont = useAuth();
+  const sideNavCont = useSideNav();
 
   const logoutUser = () => {
     localStorage.removeItem(`userLoginInfo`);
@@ -22,7 +25,13 @@ const Header = () => {
       >
         <div className={`flex flex-row`}>
           <div className={`sm:basis-1/2 basis-3/4`}>
-            <h2 className={` font-bold text-xl`}>Four Tasks</h2>
+            <span
+              className={`font-bold text-xl  inline sm:hidden pr-4`}
+              onClick={sideNavCont?.toggleSideNav}
+            >
+              <FaBars className={`inline`} />
+            </span>
+            <h2 className={`font-bold text-xl inline sm:block`}>Four Tasks</h2>
           </div>
           <div className={`sm:basis-1/2 basis-1/4`}>
             <div className={`flex justify-end`}>

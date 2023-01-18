@@ -22,12 +22,12 @@ const SideNav = () => {
             onClick={() => {
               sideNavCont?.toggleSideNav!();
             }}
-            className={`absolute left-72 mx-4 top-24 text-violet-700 bg-white z-50 rounded-r-2xl text-xl p-2 border-l-0 border-2 border-slate-100`}
+            className={`absolute left-72 mx-4 top-24 hidden sm:block text-violet-700 bg-white z-50 rounded-r-2xl text-xl p-2 border-l-0 border-2 border-slate-100`}
           >
             <FaAngleLeft />
           </div>
           <div
-            className={`fixed overflow-y-auto overflow-x-hidden top-20 left-4 bottom-4 rounded-2xl w-72 shadow-2xl shadow-slate-500 z-40 bg-white text-slate-900 p-4`}
+            className={`fixed overflow-y-auto overflow-x-hidden top-16 sm:top-20 left-0 sm:left-4 bottom-0 sm:bottom-4 rounded-none sm:rounded-2xl w-64 sm:w-72 shadow-sm sm:shadow-2xl shadow-slate-500 z-40 bg-white text-slate-900 p-4`}
           >
             <div className={`flex flex-col`}>
               <NavLink
@@ -71,7 +71,7 @@ const SideNav = () => {
         </div>
       ) : (
         <div
-          className={`fixed overflow-y-auto overflow-x-hidden top-20 left-4 bottom-4 rounded-2xl w-14 shadow-2xl shadow-slate-500 z-40 bg-white text-slate-900 p-2`}
+          className={`fixed overflow-y-auto hidden sm:block overflow-x-hidden top-20 left-4 bottom-4 rounded-2xl w-14 shadow-2xl shadow-slate-500 z-40 bg-white text-slate-900 p-2`}
         >
           <div className={`flex flex-col`}>
             <div

@@ -14,7 +14,7 @@ const Login = () => {
 
   const userCont = useAuth();
 
-  const getData = async (user: AuthUserInterface) => {
+  const getDataDB = async (user: AuthUserInterface) => {
     let { data } = await supabase
       .from(`users`)
       .select(`*`)
@@ -35,7 +35,7 @@ const Login = () => {
   });
 
   const onSubmit = (values: AuthUserInterface, onSubmitProps: any) => {
-    getData(values)
+    getDataDB(values)
       .then((res: any) => {
         if (res && res.length < 1) {
           return;
