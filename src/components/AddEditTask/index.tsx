@@ -6,12 +6,13 @@ import { supabase } from "../../supabaseClient";
 
 import Modal from "react-modal";
 import { FaPlus } from "react-icons/fa";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
 import styles from "./index.module.css";
 
 export type TaskInterface = {
+  id?: number;
   title: string;
   description: string;
   user_id: number;
@@ -25,17 +26,22 @@ export type TaskInterface = {
 };
 
 Modal.setAppElement("#root");
-const AddTask = () => {
-  const [isAddTaskPopupOpen, setIsAddTaskPopupOpen] = useState<boolean>(false);
-  const [isAddTaskInputFieldOpen, setIsAddTaskInputFieldOpen] =
+const AddEditTask = () => {
+  const [isAddTaskTypePopupOpen, setIsAddTaskTypePopupOpen] =
     useState<boolean>(false);
-  const [taskFormValues, setTaskFormValues] = useState<TaskInterface | null>(
-    null
-  );
+  const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState<boolean>(false);
+  const [addTaskFormValues, setAddTaskFormValues] =
+    useState<TaskInterface | null>(null);
+
+  const [isEditTaskTypePopupOpen, setIsEditTaskTypePopupOpen] =
+    useState<boolean>(false);
+  const [isEditTaskFormOpen, setIsEditTaskFormOpen] = useState<boolean>(false);
+  const [editTaskFormValues, setEditTaskFormValues] =
+    useState<TaskInterface | null>(null);
 
   const taskTypeContext = useTaskType();
 
-  let initialValues: TaskInterface = {
+  let addTaskInitialValues: TaskInterface = {
     title: ``,
     description: ``,
     user_id: 0,
@@ -43,13 +49,26 @@ const AddTask = () => {
     is_urgent: false,
   };
 
-  const validationSchema = Yup.object({
-    title: Yup.string().required(`Title is required!`),
+  const addTaskValidationSchema = Yup.object({
+    title: Yup.string(),
+    description: Yup.string(),
+  });
+
+  let editTaskInitialValues: TaskInterface = {
+    id: 0,
+    title: ``,
+    description: ``,
+    user_id: 0,
+    is_important: false,
+    is_urgent: false,
+  };
+
+  const editTaskValidationSchema = Yup.object({
+    title: Yup.string(),
     description: Yup.string(),
   });
 
   const addTaskDB = async (task: TaskInterface | null) => {
-    console.log(task);
     if (!task) {
       return;
     }
@@ -61,8 +80,8 @@ const AddTask = () => {
     }
     const { data, error } = await supabase.from("tasks").insert([
       {
-        title: task?.title,
-        description: task?.description,
+        title: task?.title || "",
+        description: task?.description || "",
         user_id: task?.user_id,
         is_urgent: taskTypeContext?.taskType?.urgent,
         is_important: taskTypeContext?.taskType?.important,
@@ -70,12 +89,23 @@ const AddTask = () => {
     ]);
   };
 
-  const onSubmit = async (values: TaskInterface, onSubmitProps: any) => {
-    console.log(values);
-    values.user_id = await JSON.parse(
-      localStorage.getItem("userLoginInfo") || ""
-    ).id;
-    addTaskDB(values);
+  const editTaskDB = async (task: TaskInterface | null) => {
+    // const { data, error } = await supabase
+    //   .from("tasks")
+    //   .update({ other_column: "otherValue" })
+    //   .eq("some_column", "someValue");
+    const { data, error } = await supabase
+      .from("tasks")
+      .update([
+        {
+          title: task?.title || "",
+          description: task?.description || "",
+          user_id: task?.user_id,
+          is_urgent: taskTypeContext?.taskType?.urgent,
+          is_important: taskTypeContext?.taskType?.important,
+        },
+      ])
+      .eq("id", editTaskFormValues?.id);
   };
 
   const customStyles = {
@@ -116,22 +146,29 @@ const AddTask = () => {
   };
 
   const openAddTaskPopup = () => {
-    setIsAddTaskPopupOpen((prevAddTaskPopup) => {
+    setIsAddTaskTypePopupOpen((prevAddTaskPopup) => {
       return !prevAddTaskPopup;
     });
   };
 
-  const updateTaskFormValues = (values: TaskInterface) => {
-    console.log(values);
-    setTaskFormValues(values);
+  const openEditTaskPopup = () => {
+    setIsEditTaskFormOpen((prevAddTaskPopup) => {
+      return !prevAddTaskPopup;
+    });
+  };
+
+  const openEditTaskTypePopup = () => {
+    setIsEditTaskTypePopupOpen((prevAddTaskPopup) => {
+      return !prevAddTaskPopup;
+    });
   };
 
   return (
     <>
       <Modal
-        isOpen={isAddTaskPopupOpen}
+        isOpen={isAddTaskTypePopupOpen}
         onRequestClose={() => {
-          setIsAddTaskPopupOpen(false);
+          setIsAddTaskTypePopupOpen(false);
         }}
         shouldCloseOnOverlayClick={true}
         style={customStyles}
@@ -146,10 +183,10 @@ const AddTask = () => {
           <div
             onClick={() => {
               taskTypeContext?.setImpUrg();
-              setIsAddTaskPopupOpen((prevAddTaskPopup) => {
+              setIsAddTaskTypePopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
-              setIsAddTaskInputFieldOpen(true);
+              setIsAddTaskFormOpen(true);
             }}
             className={`w-1/2 h-full inline-block bg-violet-800 rounded-tl-2xl  text-white p-2 border-4 border-white`}
           >
@@ -167,10 +204,10 @@ const AddTask = () => {
           <div
             onClick={() => {
               taskTypeContext?.setImpNotUrg();
-              setIsAddTaskPopupOpen((prevAddTaskPopup) => {
+              setIsAddTaskTypePopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
-              setIsAddTaskInputFieldOpen(true);
+              setIsAddTaskFormOpen(true);
             }}
             className={`w-1/2 h-full inline-block bg-violet-600 rounded-tr-2xl  text-white p-2 border-4 border-white`}
           >
@@ -193,10 +230,10 @@ const AddTask = () => {
           <div
             onClick={() => {
               taskTypeContext?.setNotImpUrg();
-              setIsAddTaskPopupOpen((prevAddTaskPopup) => {
+              setIsAddTaskTypePopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
-              setIsAddTaskInputFieldOpen(true);
+              setIsAddTaskFormOpen(true);
             }}
             className={`w-1/2 h-full inline-block bg-violet-600 rounded-bl-2xl  text-white p-2 border-4 border-white`}
           >
@@ -214,10 +251,10 @@ const AddTask = () => {
           <div
             onClick={() => {
               taskTypeContext?.setNotImpNotUrg();
-              setIsAddTaskPopupOpen((prevAddTaskPopup) => {
+              setIsAddTaskTypePopupOpen((prevAddTaskPopup) => {
                 return !prevAddTaskPopup;
               });
-              setIsAddTaskInputFieldOpen(true);
+              setIsAddTaskFormOpen(true);
             }}
             className={`w-1/2 h-full inline-block bg-violet-400  rounded-br-2xl  text-white p-2 border-4 border-white`}
           >
@@ -236,41 +273,27 @@ const AddTask = () => {
       </Modal>
 
       <Modal
-        isOpen={isAddTaskInputFieldOpen}
+        isOpen={isAddTaskFormOpen}
         onRequestClose={() => {
-          setIsAddTaskInputFieldOpen(false);
+          setIsAddTaskFormOpen(false);
         }}
         shouldCloseOnOverlayClick={true}
         onAfterClose={() => {
-          console.log(taskFormValues);
-          addTaskDB(taskFormValues);
+          console.log(addTaskFormValues);
+          addTaskDB(addTaskFormValues);
         }}
         style={customStylesInput}
       >
         <div className={`flex flex-col p-1`}>
-          {/* <input
-            type={`text`}
-            className={`p-1 basis-full outline-none my-1 text-lg`}
-            placeholder={`Add Title`}
-          />
-          <textarea
-            name={`description`}
-            className={`p-1 basis-full outline-none resize-none my-1 text-md`}
-            placeholder={`Add Description`}
-            cols={20}
-            rows={3}
-          ></textarea> */}
-
           <div className={`basis-auto w-auto`}>
             <div>
               <Formik
-                initialValues={initialValues}
-                onSubmit={onSubmit}
+                initialValues={addTaskInitialValues}
+                onSubmit={() => console.log("submit")}
                 onChange={(values: any) => {
-                  console.log(values);
-                  // updateTaskFormValues(values);
+                  setAddTaskFormValues(values);
                 }}
-                validationSchema={validationSchema}
+                validationSchema={addTaskValidationSchema}
                 enableReinitialize
               >
                 {(formik) => {
@@ -278,9 +301,6 @@ const AddTask = () => {
                     <div>
                       <Form>
                         <div className={`flex flex-col mb-3 w-full`}>
-                          {/* <div className={`basis-auto text-start px-2`}>
-                            <label htmlFor={`email`}>Email</label>
-                          </div> */}
                           <div className={`basis-auto text-start px-2`}>
                             <Field
                               id={`title`}
@@ -288,20 +308,14 @@ const AddTask = () => {
                               type={`text`}
                               className={`p-1 w-full outline-none my-1 text-lg`}
                               placeholder={`Add Title`}
-                            />
-                          </div>
-                          <div className={`basis-auto text-start`}>
-                            <ErrorMessage
-                              name={`title`}
-                              component={TextError}
+                              onKeyUp={() =>
+                                setAddTaskFormValues(formik.values)
+                              }
                             />
                           </div>
                         </div>
 
                         <div className={`flex flex-col mb-3`}>
-                          {/* <div className={`basis-auto text-start px-2`}>
-                            <label htmlFor={`password`}>Password</label>
-                          </div> */}
                           <div className={`basis-auto text-start px-2`}>
                             <Field
                               type={`text`}
@@ -309,31 +323,14 @@ const AddTask = () => {
                               name={`description`}
                               className={`p-1 w-full outline-none resize-none my-1 text-md`}
                               placeholder={`Add Description`}
+                              onKeyUp={() =>
+                                setAddTaskFormValues(formik.values)
+                              }
                               as={`textarea`}
                               cols={20}
                               rows={3}
                             />
                           </div>
-                          <div className={`basis-auto text-start`}>
-                            <ErrorMessage
-                              name={`password`}
-                              component={TextError}
-                            />
-                          </div>
-                        </div>
-
-                        <div className={`flex flex-row justify-center my-2`}>
-                          <button
-                            className={`bg-cyan-500 text-white p-2 rounded-sm`}
-                            type={`submit`}
-                            disabled={
-                              !formik.dirty &&
-                              !formik.isValid &&
-                              formik.isSubmitting
-                            }
-                          >
-                            Submit
-                          </button>
                         </div>
                       </Form>
                     </div>
@@ -345,12 +342,87 @@ const AddTask = () => {
         </div>
       </Modal>
 
-      <FaPlus
-        onClick={openAddTaskPopup}
-        className={`bg-violet-700 text-white text-6xl p-3 rounded-2xl absolute bottom-4 right-4`}
-      />
+      <Modal
+        isOpen={isEditTaskFormOpen}
+        onRequestClose={() => {
+          setIsEditTaskFormOpen(false);
+        }}
+        shouldCloseOnOverlayClick={true}
+        onAfterClose={() => {
+          console.log(editTaskFormValues);
+          editTaskDB(editTaskFormValues);
+        }}
+        style={customStylesInput}
+      >
+        <div className={`flex flex-col p-1`}>
+          <div className={`basis-auto w-auto`}>
+            <div>
+              <Formik
+                initialValues={editTaskInitialValues}
+                onSubmit={() => console.log("submit")}
+                onChange={(values: any) => {
+                  setEditTaskFormValues(values);
+                }}
+                validationSchema={editTaskValidationSchema}
+                enableReinitialize
+              >
+                {(formik) => {
+                  return (
+                    <div>
+                      <Form>
+                        <div className={`flex flex-col mb-3 w-full`}>
+                          <div className={`basis-auto text-start px-2`}>
+                            <Field
+                              id={`title`}
+                              name={`title`}
+                              type={`text`}
+                              className={`p-1 w-full outline-none my-1 text-lg`}
+                              placeholder={`Add Title`}
+                              onKeyUp={() =>
+                                setEditTaskFormValues(formik.values)
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <div className={`flex flex-col mb-3`}>
+                          <div className={`basis-auto text-start px-2`}>
+                            <Field
+                              type={`text`}
+                              id={`description`}
+                              name={`description`}
+                              className={`p-1 w-full outline-none resize-none my-1 text-md`}
+                              placeholder={`Add Description`}
+                              onKeyUp={() =>
+                                setEditTaskFormValues(formik.values)
+                              }
+                              as={`textarea`}
+                              cols={20}
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+                      </Form>
+                    </div>
+                  );
+                }}
+              </Formik>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {!isAddTaskFormOpen &&
+      !isAddTaskTypePopupOpen &&
+      !isEditTaskFormOpen &&
+      !isEditTaskTypePopupOpen ? (
+        <FaPlus
+          onClick={openAddTaskPopup}
+          className={`bg-white hover:bg-violet-700 text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl absolute bottom-4 right-4`}
+        />
+      ) : null}
     </>
   );
 };
 
-export default AddTask;
+export default AddEditTask;

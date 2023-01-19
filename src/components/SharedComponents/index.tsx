@@ -1,6 +1,6 @@
 import Header from "../Header";
 import SideNav from "../SideNav";
-import AddTask from "../AddTask";
+import AddEditTask from "../AddEditTask";
 import Footer from "../Footer";
 
 import styles from "./index.module.css";
@@ -22,7 +22,7 @@ const SharedComponents = ({
     <>
       {showHeader ? <Header /> : null}
       {showSideNav ? <SideNav /> : null}
-      {showAddTask ? <AddTask /> : null}
+      {showAddTask ? <AddEditTask /> : null}
       {showFooter ? <Footer /> : null}
     </>
   );
