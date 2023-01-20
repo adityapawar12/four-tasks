@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState, useEffect, useRef } from "react";
 
 import { useTaskType } from "../../context/TaskType";
 import TextError from "../TextError";
@@ -6,10 +6,11 @@ import { supabase } from "../../supabaseClient";
 
 import Modal from "react-modal";
 import { FaPlus } from "react-icons/fa";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, FormikFormProps } from "formik";
 import * as Yup from "yup";
 
 import styles from "./index.module.css";
+import { useTask } from "../../context/AddEditTask";
 
 export type TaskInterface = {
   id?: number;
@@ -23,7 +24,14 @@ export type TaskInterface = {
   label_ids?: any;
   is_important: boolean;
   is_urgent: boolean;
+  status: TaskStatusInterface;
 };
+
+enum TaskStatusInterface {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
 
 Modal.setAppElement("#root");
 const AddEditTask = () => {
@@ -39,7 +47,15 @@ const AddEditTask = () => {
   const [editTaskFormValues, setEditTaskFormValues] =
     useState<TaskInterface | null>(null);
 
+  const [descriptionHeight, setDescriptionHeight] = useState<string | number>(
+    "auto"
+  );
+  const [descriptionOverflow, setDescriptionOverflow] =
+    useState<string>("hidden");
+
   const taskTypeContext = useTaskType();
+  const taskContext = useTask();
+  const formikRef = useRef();
 
   let addTaskInitialValues: TaskInterface = {
     title: ``,
@@ -47,6 +63,7 @@ const AddEditTask = () => {
     user_id: 0,
     is_important: false,
     is_urgent: false,
+    status: TaskStatusInterface.PENDING,
   };
 
   const addTaskValidationSchema = Yup.object({
@@ -61,6 +78,7 @@ const AddEditTask = () => {
     user_id: 0,
     is_important: false,
     is_urgent: false,
+    status: TaskStatusInterface.PENDING,
   };
 
   const editTaskValidationSchema = Yup.object({
@@ -85,15 +103,14 @@ const AddEditTask = () => {
         user_id: task?.user_id,
         is_urgent: taskTypeContext?.taskType?.urgent,
         is_important: taskTypeContext?.taskType?.important,
+        status: task?.status,
       },
     ]);
+
+    taskContext?.toggleIsTaskAdded();
   };
 
   const editTaskDB = async (task: TaskInterface | null) => {
-    // const { data, error } = await supabase
-    //   .from("tasks")
-    //   .update({ other_column: "otherValue" })
-    //   .eq("some_column", "someValue");
     const { data, error } = await supabase
       .from("tasks")
       .update([
@@ -106,6 +123,9 @@ const AddEditTask = () => {
         },
       ])
       .eq("id", editTaskFormValues?.id);
+
+    taskContext?.setEditTask(null);
+    taskContext?.toggleIsEditingTask();
   };
 
   const customStyles = {
@@ -137,7 +157,7 @@ const AddEditTask = () => {
       bottom: `auto`,
       width: `23rem`,
       marginRight: `-50%`,
-      padding: `0px 10px`,
+      padding: `0px 0px`,
       boxShadow: `0 1px 2px 0 rgba(60,64,67,0.302),0 2px 6px 2px rgba(60,64,67,0.149)`,
       border: `0`,
       borderRadius: `1rem`,
@@ -151,16 +171,24 @@ const AddEditTask = () => {
     });
   };
 
-  const openEditTaskPopup = () => {
-    setIsEditTaskFormOpen((prevAddTaskPopup) => {
-      return !prevAddTaskPopup;
-    });
-  };
+  useEffect(() => {
+    if (descriptionHeight > window.innerHeight * 0.75) {
+      setDescriptionOverflow("auto");
+    } else {
+      setDescriptionOverflow("hidden");
+    }
+  }, [descriptionHeight]);
 
-  const openEditTaskTypePopup = () => {
-    setIsEditTaskTypePopupOpen((prevAddTaskPopup) => {
-      return !prevAddTaskPopup;
-    });
+  useEffect(() => {
+    if (taskContext?.task) {
+      setIsEditTaskFormOpen(true);
+      setEditTaskFormValues(taskContext.task);
+    } else {
+      setIsEditTaskFormOpen(false);
+    }
+  }, [taskContext]);
+  const onDescriptionChange = (event: ChangeEvent) => {
+    setDescriptionHeight(event.target.scrollHeight);
   };
 
   return (
@@ -173,10 +201,6 @@ const AddEditTask = () => {
         shouldCloseOnOverlayClick={true}
         style={customStyles}
       >
-        <h4 className={`text-lg font-semibold text-center py-1`}>
-          Select Task Type
-        </h4>
-
         <div
           className={`w-72 h-32 xs:w-80 xs:h-36 sm:w-96 sm:h-40 block box-content`}
         >
@@ -279,17 +303,16 @@ const AddEditTask = () => {
         }}
         shouldCloseOnOverlayClick={true}
         onAfterClose={() => {
-          console.log(addTaskFormValues);
           addTaskDB(addTaskFormValues);
         }}
         style={customStylesInput}
       >
-        <div className={`flex flex-col p-1`}>
+        <div className={`flex flex-col p-4`}>
           <div className={`basis-auto w-auto`}>
             <div>
               <Formik
                 initialValues={addTaskInitialValues}
-                onSubmit={() => console.log("submit")}
+                onSubmit={() => alert("submit")}
                 onChange={(values: any) => {
                   setAddTaskFormValues(values);
                 }}
@@ -300,13 +323,13 @@ const AddEditTask = () => {
                   return (
                     <div>
                       <Form>
-                        <div className={`flex flex-col mb-3 w-full`}>
-                          <div className={`basis-auto text-start px-2`}>
+                        <div className={`flex flex-col w-full`}>
+                          <div className={`basis-auto text-start`}>
                             <Field
                               id={`title`}
                               name={`title`}
                               type={`text`}
-                              className={`p-1 w-full outline-none my-1 text-lg`}
+                              className={`w-full py-1 outline-none m-0 text-2xl`}
                               placeholder={`Add Title`}
                               onKeyUp={() =>
                                 setAddTaskFormValues(formik.values)
@@ -315,20 +338,25 @@ const AddEditTask = () => {
                           </div>
                         </div>
 
-                        <div className={`flex flex-col mb-3`}>
-                          <div className={`basis-auto text-start px-2`}>
+                        <div className={`flex flex-col w-full`}>
+                          <div className={`basis-auto text-start`}>
                             <Field
                               type={`text`}
                               id={`description`}
                               name={`description`}
-                              className={`p-1 w-full outline-none resize-none my-1 text-md`}
+                              className={`w-full py-1 outline-none m-0 text-md resize-none max-h-60 overflow-hidden text-lg`}
+                              style={{
+                                height: descriptionHeight,
+                                overflow: descriptionOverflow,
+                              }}
                               placeholder={`Add Description`}
-                              onKeyUp={() =>
-                                setAddTaskFormValues(formik.values)
-                              }
+                              onKeyUp={(event: ChangeEvent) => {
+                                setAddTaskFormValues(formik.values);
+                                onDescriptionChange(event);
+                              }}
                               as={`textarea`}
                               cols={20}
-                              rows={3}
+                              rows={5}
                             />
                           </div>
                         </div>
@@ -349,17 +377,16 @@ const AddEditTask = () => {
         }}
         shouldCloseOnOverlayClick={true}
         onAfterClose={() => {
-          console.log(editTaskFormValues);
           editTaskDB(editTaskFormValues);
         }}
         style={customStylesInput}
       >
-        <div className={`flex flex-col p-1`}>
+        <div className={`flex flex-col p-4`}>
           <div className={`basis-auto w-auto`}>
             <div>
               <Formik
-                initialValues={editTaskInitialValues}
-                onSubmit={() => console.log("submit")}
+                initialValues={editTaskFormValues || editTaskInitialValues}
+                onSubmit={() => alert("submit")}
                 onChange={(values: any) => {
                   setEditTaskFormValues(values);
                 }}
@@ -370,13 +397,13 @@ const AddEditTask = () => {
                   return (
                     <div>
                       <Form>
-                        <div className={`flex flex-col mb-3 w-full`}>
-                          <div className={`basis-auto text-start px-2`}>
+                        <div className={`flex flex-col w-full`}>
+                          <div className={`basis-auto text-start`}>
                             <Field
                               id={`title`}
                               name={`title`}
                               type={`text`}
-                              className={`p-1 w-full outline-none my-1 text-lg`}
+                              className={`w-full py-1 outline-none m-0 text-2xl`}
                               placeholder={`Add Title`}
                               onKeyUp={() =>
                                 setEditTaskFormValues(formik.values)
@@ -385,20 +412,25 @@ const AddEditTask = () => {
                           </div>
                         </div>
 
-                        <div className={`flex flex-col mb-3`}>
-                          <div className={`basis-auto text-start px-2`}>
+                        <div className={`flex flex-col w-full`}>
+                          <div className={`basis-auto text-start`}>
                             <Field
                               type={`text`}
                               id={`description`}
                               name={`description`}
-                              className={`p-1 w-full outline-none resize-none my-1 text-md`}
+                              className={`w-full py-1 outline-none m-0 text-md resize-none max-h-60 overflow-hidden text-lg`}
+                              style={{
+                                height: descriptionHeight,
+                                overflow: descriptionOverflow,
+                              }}
                               placeholder={`Add Description`}
-                              onKeyUp={() =>
-                                setEditTaskFormValues(formik.values)
-                              }
+                              onKeyUp={(event: ChangeEvent) => {
+                                setEditTaskFormValues(formik.values);
+                                onDescriptionChange(event);
+                              }}
                               as={`textarea`}
                               cols={20}
-                              rows={3}
+                              rows={5}
                             />
                           </div>
                         </div>
@@ -418,7 +450,7 @@ const AddEditTask = () => {
       !isEditTaskTypePopupOpen ? (
         <FaPlus
           onClick={openAddTaskPopup}
-          className={`bg-white hover:bg-violet-700 text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl absolute bottom-4 right-4`}
+          className={`bg-white hover:bg-violet-700 text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl fixed bottom-0 mb-4 right-4`}
         />
       ) : null}
     </>

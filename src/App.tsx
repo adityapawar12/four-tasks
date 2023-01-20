@@ -13,63 +13,66 @@ import { SideNavProvider } from "./context/SideNav";
 import { ThemeProvider } from "./context/Theme";
 
 import styles from "./App.module.css";
+import { TaskProvider } from "./context/AddEditTask";
 
 const App = () => {
   return (
     <div>
       <AuthProvider>
         <ThemeProvider>
-          <TaskTypeProvider>
-            <SideNavProvider>
-              <React.Suspense fallback={"Loading..."}>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <RequireAuth>
-                        <Login />
-                      </RequireAuth>
-                    }
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <RequireAuth>
-                        <Login />
-                      </RequireAuth>
-                    }
-                  />
+          <TaskProvider>
+            <TaskTypeProvider>
+              <SideNavProvider>
+                <React.Suspense fallback={"Loading..."}>
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <RequireAuth>
+                          <Login />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/login"
+                      element={
+                        <RequireAuth>
+                          <Login />
+                        </RequireAuth>
+                      }
+                    />
 
-                  <Route
-                    path="/home"
-                    element={
-                      <RequireAuth>
-                        <Home />
-                      </RequireAuth>
-                    }
-                  />
-                  <Route
-                    path="/tasks"
-                    element={
-                      <RequireAuth>
-                        <Tasks />
-                      </RequireAuth>
-                    }
-                  />
-                  <Route
-                    path="/notes"
-                    element={
-                      <RequireAuth>
-                        <Notes />
-                      </RequireAuth>
-                    }
-                  />
+                    <Route
+                      path="/home"
+                      element={
+                        <RequireAuth>
+                          <Home />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/tasks"
+                      element={
+                        <RequireAuth>
+                          <Tasks />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/notes"
+                      element={
+                        <RequireAuth>
+                          <Notes />
+                        </RequireAuth>
+                      }
+                    />
 
-                  <Route path="*" element={<NoMatch />} />
-                </Routes>
-              </React.Suspense>
-            </SideNavProvider>
-          </TaskTypeProvider>
+                    <Route path="*" element={<NoMatch />} />
+                  </Routes>
+                </React.Suspense>
+              </SideNavProvider>
+            </TaskTypeProvider>
+          </TaskProvider>
         </ThemeProvider>
       </AuthProvider>
     </div>
