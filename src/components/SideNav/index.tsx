@@ -7,6 +7,9 @@ import {
   FaNotesMedical,
   FaTasks,
   FaAngleLeft,
+  FaCross,
+  FaTimes,
+  FaTimesCircle,
 } from "react-icons/fa";
 
 import styles from "./index.module.css";
@@ -22,9 +25,11 @@ const SideNav = () => {
             onClick={() => {
               sideNavCont?.toggleSideNav!();
             }}
-            className={`absolute left-72 mx-4 top-24 hidden sm:block text-violet-700 bg-white z-50 rounded-r-2xl text-xl p-2 border-l-0 border-2 border-slate-100`}
+            className={`absolute left-72 top-16 mt-1 hidden sm:block z-50 text-xl py-2 px-1`}
           >
-            <FaAngleLeft />
+            <FaTimesCircle
+              className={`text-2xl text-violet-700 bg-white hover:bg-violet-700 hover:text-white rounded-full`}
+            />
           </div>
           <div
             className={`fixed overflow-y-auto overflow-x-hidden top-16 sm:top-20 left-0 sm:left-4 bottom-0 sm:bottom-4 rounded-none sm:rounded-2xl w-64 sm:w-72 shadow-sm sm:shadow-2xl shadow-slate-500 z-40 bg-white text-slate-900 p-4`}

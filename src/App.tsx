@@ -26,7 +26,7 @@ const App = () => {
                 <React.Suspense fallback={"Loading..."}>
                   <Routes>
                     <Route
-                      path="/"
+                      path={`/`}
                       element={
                         <RequireAuth>
                           <Login />
@@ -34,7 +34,7 @@ const App = () => {
                       }
                     />
                     <Route
-                      path="/login"
+                      path={`/login`}
                       element={
                         <RequireAuth>
                           <Login />
@@ -43,7 +43,7 @@ const App = () => {
                     />
 
                     <Route
-                      path="/home"
+                      path={`/home`}
                       element={
                         <RequireAuth>
                           <Home />
@@ -51,7 +51,7 @@ const App = () => {
                       }
                     />
                     <Route
-                      path="/tasks"
+                      path={`/tasks`}
                       element={
                         <RequireAuth>
                           <Tasks />
@@ -59,7 +59,7 @@ const App = () => {
                       }
                     />
                     <Route
-                      path="/notes"
+                      path={`/notes`}
                       element={
                         <RequireAuth>
                           <Notes />
@@ -67,7 +67,7 @@ const App = () => {
                       }
                     />
 
-                    <Route path="*" element={<NoMatch />} />
+                    <Route path={`*`} element={<NoMatch />} />
                   </Routes>
                 </React.Suspense>
               </SideNavProvider>

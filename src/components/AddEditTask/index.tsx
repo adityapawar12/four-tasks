@@ -25,6 +25,8 @@ export type TaskInterface = {
   is_important: boolean;
   is_urgent: boolean;
   status: TaskStatusInterface;
+  inserted_at?: Date;
+  updated_at?: Date;
 };
 
 enum TaskStatusInterface {
@@ -313,7 +315,7 @@ const AddEditTask = () => {
               <Formik
                 initialValues={addTaskInitialValues}
                 onSubmit={() => alert("submit")}
-                onChange={(values: any) => {
+                onChange={(values: TaskInterface) => {
                   setAddTaskFormValues(values);
                 }}
                 validationSchema={addTaskValidationSchema}
@@ -387,7 +389,7 @@ const AddEditTask = () => {
               <Formik
                 initialValues={editTaskFormValues || editTaskInitialValues}
                 onSubmit={() => alert("submit")}
-                onChange={(values: any) => {
+                onChange={(values: TaskInterface) => {
                   setEditTaskFormValues(values);
                 }}
                 validationSchema={editTaskValidationSchema}
@@ -450,7 +452,7 @@ const AddEditTask = () => {
       !isEditTaskTypePopupOpen ? (
         <FaPlus
           onClick={openAddTaskPopup}
-          className={`bg-white hover:bg-violet-700 text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl fixed bottom-0 mb-4 right-4`}
+          className={`bg-white hover:bg-violet-700 z-50  text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl fixed bottom-0 mb-4 right-4`}
         />
       ) : null}
     </>
