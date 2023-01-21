@@ -1,14 +1,13 @@
 import SharedComponents from "../SharedComponents";
 
-import styles from "./index.module.css";
-
 const Notes = () => {
   return (
     <>
       <SharedComponents
         showHeader={true}
         showSideNav={true}
-        showAddTask={true}
+        showAddTask={false}
+        showAddNote={true}
         showFooter={false}
       />
     </>

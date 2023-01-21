@@ -2,12 +2,14 @@ import { useNavigate } from "react-router";
 
 import TextError from "../TextError";
 import { supabase } from "../../supabaseClient";
-import { AuthUserInterface, useAuth } from "../../context/Auth";
+import { useAuth } from "../../context/Auth";
+import { AuthUserInterface } from "../../models/Auth";
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import styles from "./index.module.css";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -122,6 +124,15 @@ const Login = () => {
                                 component={TextError}
                               />
                             </div>
+                          </div>
+
+                          <div className={`flex flex-row justify-center my-2`}>
+                            <p className={`text-black`}>
+                              Don't have an account,{" "}
+                              <span className={`text-violet-700 underline`}>
+                                <Link to={"/sign-up"}>Sign Up</Link>
+                              </span>
+                            </p>
                           </div>
 
                           <div className={`flex flex-row justify-center my-2`}>

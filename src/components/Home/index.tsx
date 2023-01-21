@@ -1,7 +1,5 @@
 import SharedComponents from "../SharedComponents";
 
-import styles from "./index.module.css";
-
 const Home = () => {
   return (
     <>
@@ -9,6 +7,7 @@ const Home = () => {
         showHeader={true}
         showSideNav={true}
         showAddTask={true}
+        showAddNote={false}
         showFooter={false}
       />
     </>

@@ -4,8 +4,6 @@ import { useAuth } from "../../context/Auth";
 
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
-import styles from "./index.module.css";
-
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const auth = useAuth();
 
@@ -23,6 +21,7 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
 
   if (
     location.pathname !== `/login` &&
+    location.pathname !== `/sign-up` &&
     !auth?.user &&
     !localStorage.getItem(`userLoginInfo`)
   ) {

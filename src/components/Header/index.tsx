@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router";
 
 import { useAuth } from "../../context/Auth";
-
-import styles from "./index.module.css";
 import { useSideNav } from "../../context/SideNav";
+
 import { FaBars } from "react-icons/fa";
 
 const Header = () => {

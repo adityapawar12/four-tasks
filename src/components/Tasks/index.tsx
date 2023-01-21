@@ -1,23 +1,15 @@
 import { useState, useEffect } from "react";
 
-import SharedComponents from "../SharedComponents";
-import { supabase } from "../../supabaseClient";
-
-import styles from "./index.module.css";
-import { TaskInterface } from "../AddEditTask";
-import { useTask } from "../../context/AddEditTask";
 import { useAuth } from "../../context/Auth";
-import {
-  FaCheck,
-  FaClock,
-  FaInfoCircle,
-  FaTimes,
-  FaTimesCircle,
-} from "react-icons/fa";
+import { supabase } from "../../supabaseClient";
+import { TaskInterface } from "../../models/Task";
+import { useTask } from "../../context/AddEditTask";
+import SharedComponents from "../SharedComponents";
 import { useSideNav } from "../../context/SideNav";
-import Modal from "react-modal";
+
 import dayjs from "dayjs";
-import * as luxon from "luxon";
+import Modal from "react-modal";
+import { FaCheck, FaClock, FaInfoCircle, FaTimes } from "react-icons/fa";
 
 type TaskFilter = {
   time: timeEnum;
@@ -275,6 +267,7 @@ const Tasks = () => {
         showHeader={true}
         showSideNav={true}
         showAddTask={true}
+        showAddNote={false}
         showFooter={false}
       />
 
@@ -296,7 +289,7 @@ const Tasks = () => {
               className={`basis-1/2 m-0 px-4 border-2 text-center ${
                 taskFilter.time === "TODAY"
                   ? "border-violet-700 text-violet-700 bg-white hover:border-2"
-                  : "border-white text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
+                  : "border-violet-700 text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
               } rounded-l-2xl`}
             >
               TODAY
@@ -310,7 +303,7 @@ const Tasks = () => {
               className={`basis-1/2 m-0 px-4 border-2 text-center ${
                 taskFilter.time === "ALL"
                   ? "border-violet-700 text-violet-700 bg-white hover:border-2"
-                  : "border-white text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
+                  : "border-violet-700 text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
               } rounded-r-2xl`}
             >
               ALL
@@ -326,7 +319,7 @@ const Tasks = () => {
               className={`basis-1/3 m-0 px-4 border-2 text-center ${
                 taskFilter.status === "PENDING"
                   ? "border-violet-700 text-violet-700 bg-white hover:border-2"
-                  : "border-white text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
+                  : "border-violet-700 text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
               }  rounded-l-2xl`}
             >
               PENDING
@@ -340,7 +333,7 @@ const Tasks = () => {
               className={`basis-1/3 m-0 px-4 border-2 text-center ${
                 taskFilter.status === "CANCELLED"
                   ? "border-violet-700 text-violet-700 bg-white hover:border-2"
-                  : "border-white text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
+                  : "border-violet-700 text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
               }`}
             >
               CANCELLED
@@ -354,7 +347,7 @@ const Tasks = () => {
               className={`basis-1/3 m-0 px-4 border-2 text-center ${
                 taskFilter.status === "COMPLETED"
                   ? "border-violet-700 text-violet-700 bg-white hover:border-2"
-                  : "border-white text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
+                  : "border-violet-700 text-white bg-violet-700 hover:border-violet-700 hover:text-violet-700 hover:bg-white hover:border-2"
               }  rounded-r-2xl`}
             >
               COMPLETED

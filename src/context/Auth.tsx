@@ -1,19 +1,7 @@
 import { createContext, useContext, useState } from "react";
+import { AuthUserInterface } from "../models/Auth";
+import { AuthLoginUserInterface } from "../models/Auth";
 
-export interface AuthUserInterface {
-  id?: number;
-  name?: string;
-  email: string;
-  phone?: string;
-  password?: string;
-  inserted_at?: string;
-  updated_at?: string;
-}
-
-export interface AuthLoginUserInterface {
-  email: string;
-  password: string;
-}
 interface AuthContextInterface {
   user: AuthUserInterface | null;
   login(z: AuthLoginUserInterface): void;

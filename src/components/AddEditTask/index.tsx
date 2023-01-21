@@ -1,93 +1,37 @@
 import { ChangeEvent, useState, useEffect, useRef } from "react";
 
-import { useTaskType } from "../../context/TaskType";
-import TextError from "../TextError";
-import { supabase } from "../../supabaseClient";
-
+import * as Yup from "yup";
 import Modal from "react-modal";
 import { FaPlus } from "react-icons/fa";
 import { Formik, Form, Field, FormikFormProps } from "formik";
-import * as Yup from "yup";
 
-import styles from "./index.module.css";
+import { supabase } from "../../supabaseClient";
 import { useTask } from "../../context/AddEditTask";
-
-export type TaskInterface = {
-  id?: number;
-  title: string;
-  description: string;
-  user_id: number;
-  seq_no?: number;
-  is_archived?: boolean;
-  is_pinned?: boolean;
-  pinned_id?: number;
-  label_ids?: any;
-  is_important: boolean;
-  is_urgent: boolean;
-  status: TaskStatusInterface;
-  inserted_at?: Date;
-  updated_at?: Date;
-};
-
-enum TaskStatusInterface {
-  PENDING = "PENDING",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-}
+import { useTaskType } from "../../context/TaskType";
+import { TaskInterface, TaskStatusEnum } from "../../models/Task";
 
 Modal.setAppElement("#root");
 const AddEditTask = () => {
+  const taskTypeContext = useTaskType();
+  const taskContext = useTask();
+
   const [isAddTaskTypePopupOpen, setIsAddTaskTypePopupOpen] =
     useState<boolean>(false);
   const [isAddTaskFormOpen, setIsAddTaskFormOpen] = useState<boolean>(false);
   const [addTaskFormValues, setAddTaskFormValues] =
     useState<TaskInterface | null>(null);
-
-  const [isEditTaskTypePopupOpen, setIsEditTaskTypePopupOpen] =
-    useState<boolean>(false);
-  const [isEditTaskFormOpen, setIsEditTaskFormOpen] = useState<boolean>(false);
-  const [editTaskFormValues, setEditTaskFormValues] =
-    useState<TaskInterface | null>(null);
-
-  const [descriptionHeight, setDescriptionHeight] = useState<string | number>(
-    "auto"
-  );
-  const [descriptionOverflow, setDescriptionOverflow] =
-    useState<string>("hidden");
-
-  const taskTypeContext = useTaskType();
-  const taskContext = useTask();
-  const formikRef = useRef();
-
   let addTaskInitialValues: TaskInterface = {
     title: ``,
     description: ``,
     user_id: 0,
     is_important: false,
     is_urgent: false,
-    status: TaskStatusInterface.PENDING,
+    status: TaskStatusEnum.PENDING,
   };
-
   const addTaskValidationSchema = Yup.object({
     title: Yup.string(),
     description: Yup.string(),
   });
-
-  let editTaskInitialValues: TaskInterface = {
-    id: 0,
-    title: ``,
-    description: ``,
-    user_id: 0,
-    is_important: false,
-    is_urgent: false,
-    status: TaskStatusInterface.PENDING,
-  };
-
-  const editTaskValidationSchema = Yup.object({
-    title: Yup.string(),
-    description: Yup.string(),
-  });
-
   const addTaskDB = async (task: TaskInterface | null) => {
     if (!task) {
       return;
@@ -98,6 +42,7 @@ const AddEditTask = () => {
         localStorage.getItem("userLoginInfo") || ""
       ).id;
     }
+
     const { data, error } = await supabase.from("tasks").insert([
       {
         title: task?.title || "",
@@ -112,6 +57,24 @@ const AddEditTask = () => {
     taskContext?.toggleIsTaskAdded();
   };
 
+  const [isEditTaskTypePopupOpen, setIsEditTaskTypePopupOpen] =
+    useState<boolean>(false);
+  const [isEditTaskFormOpen, setIsEditTaskFormOpen] = useState<boolean>(false);
+  const [editTaskFormValues, setEditTaskFormValues] =
+    useState<TaskInterface | null>(null);
+  let editTaskInitialValues: TaskInterface = {
+    id: 0,
+    title: ``,
+    description: ``,
+    user_id: 0,
+    is_important: false,
+    is_urgent: false,
+    status: TaskStatusEnum.PENDING,
+  };
+  const editTaskValidationSchema = Yup.object({
+    title: Yup.string(),
+    description: Yup.string(),
+  });
   const editTaskDB = async (task: TaskInterface | null) => {
     const { data, error } = await supabase
       .from("tasks")
@@ -130,6 +93,12 @@ const AddEditTask = () => {
     taskContext?.toggleIsEditingTask();
   };
 
+  const [descriptionHeight, setDescriptionHeight] = useState<string | number>(
+    "auto"
+  );
+  const [descriptionOverflow, setDescriptionOverflow] =
+    useState<string>("hidden");
+
   const customStyles = {
     overlay: {
       background: `rgba(0, 0, 0, 0)`,
@@ -147,7 +116,6 @@ const AddEditTask = () => {
       transform: `translate(-50%, -50%)`,
     },
   };
-
   const customStylesInput = {
     overlay: {
       background: `rgba(255, 255, 255, 0.2)`,
@@ -189,6 +157,7 @@ const AddEditTask = () => {
       setIsEditTaskFormOpen(false);
     }
   }, [taskContext]);
+
   const onDescriptionChange = (event: ChangeEvent) => {
     setDescriptionHeight(event.target.scrollHeight);
   };

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { TaskInterface } from "../components/AddEditTask";
+import { TaskInterface } from "../models/Task";
 
 interface TaskContextInterface {
   task: TaskInterface | null;

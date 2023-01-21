@@ -14,6 +14,7 @@ import { ThemeProvider } from "./context/Theme";
 
 import styles from "./App.module.css";
 import { TaskProvider } from "./context/AddEditTask";
+import SignUp from "./components/SignUp";
 
 const App = () => {
   return (
@@ -38,6 +39,14 @@ const App = () => {
                       element={
                         <RequireAuth>
                           <Login />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path={`/sign-up`}
+                      element={
+                        <RequireAuth>
+                          <SignUp />
                         </RequireAuth>
                       }
                     />

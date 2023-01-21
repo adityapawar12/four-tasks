@@ -6,13 +6,8 @@ import {
   FaHome,
   FaNotesMedical,
   FaTasks,
-  FaAngleLeft,
-  FaCross,
-  FaTimes,
   FaTimesCircle,
 } from "react-icons/fa";
-
-import styles from "./index.module.css";
 
 const SideNav = () => {
   const sideNavCont = useSideNav();
