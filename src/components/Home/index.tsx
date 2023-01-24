@@ -7,6 +7,7 @@ import { supabase } from "../../supabaseClient";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import dayjs from "dayjs";
+import { useAuth } from "../../context/Auth";
 Chart.register(CategoryScale);
 
 type TaskCountType = {
@@ -17,6 +18,7 @@ type TaskCountType = {
 };
 
 const Home = () => {
+  const authContext = useAuth();
   const [allTopCount, setAllTopCount] = useState<TaskCountType>({
     allTasksCount: 0,
     pendingTasksCount: 0,
@@ -25,32 +27,37 @@ const Home = () => {
   });
   const [graphDates, setGraphDates] = useState<Array<string> | any>(undefined);
   const [graphAllTasksCountByDate, setGraphAllTasksCountByDate] =
-    useState<Array<number> | null>(null);
+    useState<Array<number> | null>([]);
   const [graphPendingTasksCountByDate, setGraphPendingTasksCountByDate] =
-    useState<Array<number> | null>(null);
+    useState<Array<number> | null>([]);
   const [graphCompletedTasksCountByDate, setGraphCompletedTasksCountByDate] =
-    useState<Array<number> | null>(null);
+    useState<Array<number> | null>([]);
   const [graphCancelledTasksCountByDate, setGraphCancelledTasksCountByDate] =
-    useState<Array<number> | null>(null);
+    useState<Array<number> | null>([]);
 
   const sideNavContext = useSideNav();
 
   const getAllTasksCountDB = async (): Promise<any> => {
+    const userId = JSON.parse(localStorage.getItem(`userLoginInfo`) || "").id;
     const allTasksCount = await supabase
       .from("tasks")
-      .select("*", { count: "exact", head: true });
+      .select("*", { count: "exact" })
+      .eq("user_id", userId);
     const pendingTasksCount = await supabase
       .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "PENDING");
+      .select("*", { count: "exact" })
+      .eq("status", "PENDING")
+      .eq("user_id", userId);
     const completedTasksCount = await supabase
       .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "COMPLETED");
+      .select("*", { count: "exact" })
+      .eq("status", "COMPLETED")
+      .eq("user_id", userId);
     const cancelledTasksCount = await supabase
       .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "CANCELLED");
+      .select("*", { count: "exact" })
+      .eq("status", "CANCELLED")
+      .eq("user_id", userId);
     return {
       allTasksCount,
       pendingTasksCount,
@@ -59,16 +66,55 @@ const Home = () => {
     };
   };
 
+  const getGraphCountsAllDB = async (element: string): Promise<any> => {
+    const { count }: any = await supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
+    return {
+      allTasksCount: count,
+    };
+  };
+
+  const getGraphCountsPendingDB = async (element: string): Promise<any> => {
+    const { count }: any = await supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "PENDING")
+      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
+    return {
+      pendingTasksCount: count,
+    };
+  };
+
+  const getGraphCountsCompletedDB = async (element: string): Promise<any> => {
+    const { count }: any = await supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "COMPLETED")
+      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
+    return {
+      completedTasksCount: count,
+    };
+  };
+
+  const getGraphCountsCancelledDB = async (element: string): Promise<any> => {
+    const { count }: any = await supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "CANCELLED")
+      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
+    return {
+      cancelledTasksCount: count,
+    };
+  };
+
   const getGraphDataDB = async (): Promise<any> => {
     const { data }: any = await supabase.from("tasks").select("inserted_at");
-
-    // for (let index = 0; index < data.length; index++) {
-    //   const element = data[index]
-    //   const { data2 }: any = await supabase
-    //     .from("tasks")
-    //     .select("*")
-    //     .eq("inserted_at", dayjs(element.inserted_at).format("YYYY-MM-DD"));
-    // }
     return data;
   };
 
@@ -82,82 +128,123 @@ const Home = () => {
       };
       setAllTopCount(countsObj);
     });
-    // getGraphDataDB().then(async (res: any) => {
-    //   for (let index = 0; index < res.length; index++) {
-    //     const element = res[index];
-    //     if (graphDates) {
-    //       if (!graphDates.includes(element.inserted_at)) {
-    //         await setGraphDates((prevGraphDates: any) => {
-    //           return [...prevGraphDates, element.inserted_at];
-    //         });
-    //       }
-    //     } else {
-    //       await setGraphDates([element.inserted_at]);
+    getGraphDataDB().then(async (res: any) => {
+      for (let index = 0; index < res.length; index++) {
+        const element = res[index];
+        console.log(element);
+        if (graphDates) {
+          if (!graphDates.includes(element.inserted_at)) {
+            await setGraphDates((prevGraphDates: any) => {
+              return [...prevGraphDates, element.inserted_at];
+            });
+          }
+        } else {
+          await setGraphDates([element.inserted_at]);
+        }
+        return graphDates;
+      }
+    });
+    // .then((dates) => {
+    //   if (dates && dates.length > 0) {
+    //     for (let index = 0; index < dates.length; index++) {
+    //       const element = dates[index];
+    //       const { allTasksCount }: any = supabase
+    //         .from("tasks")
+    //         .select("*", { count: "exact" })
+    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+    //         .lte(
+    //           "inserted_at",
+    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
+    //         );
+    //       const { pendingTasksCount }: any = supabase
+    //         .from("tasks")
+    //         .select("*", { count: "exact" })
+    //         .eq("status", "PENDING")
+    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+    //         .lte(
+    //           "inserted_at",
+    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
+    //         );
+    //       const { completedTasksCount }: any = supabase
+    //         .from("tasks")
+    //         .select("*", { count: "exact" })
+    //         .eq("status", "COMPLETED")
+    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+    //         .lte(
+    //           "inserted_at",
+    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
+    //         );
+    //       const { cancelledTasksCount }: any = supabase
+    //         .from("tasks")
+    //         .select("*", { count: "exact" })
+    //         .eq("status", "CANCELLED")
+    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
+    //         .lte(
+    //           "inserted_at",
+    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
+    //         );
+    //       setGraphAllTasksCountByDate((prevCount: any) => {
+    //         return [...prevCount, allTasksCount.count];
+    //       });
+    //       setGraphPendingTasksCountByDate((prevCount: any) => {
+    //         return [...prevCount, pendingTasksCount.count];
+    //       });
+    //       setGraphCancelledTasksCountByDate((prevCount: any) => {
+    //         return [...prevCount, completedTasksCount.count];
+    //       });
+    //       setGraphCompletedTasksCountByDate((prevCount: any) => {
+    //         return [...prevCount, cancelledTasksCount.count];
+    //       });
     //     }
     //   }
     // });
-
-    // console.log(graphDates);
-
-    // if (graphDates && graphDates.length > 0) {
-    //   for (let index = 0; index < graphDates.length; index++) {
-    //     const element = graphDates[index];
-    //     const { allTasksCount }: any = supabase
-    //       .from("tasks")
-    //       .select("*", { count: "exact" })
-    //       .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //       .lte(
-    //         "inserted_at",
-    //         dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //       );
-    //     console.log(allTasksCount.count);
-    //     const { pendingTasksCount }: any = supabase
-    //       .from("tasks")
-    //       .select("*", { count: "exact" })
-    //       .eq("status", "PENDING")
-    //       .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //       .lte(
-    //         "inserted_at",
-    //         dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //       );
-    //     console.log(pendingTasksCount.count);
-    //     const { completedTasksCount }: any = supabase
-    //       .from("tasks")
-    //       .select("*", { count: "exact" })
-    //       .eq("status", "COMPLETED")
-    //       .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //       .lte(
-    //         "inserted_at",
-    //         dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //       );
-    //     console.log(completedTasksCount.count);
-    //     const { cancelledTasksCount }: any = supabase
-    //       .from("tasks")
-    //       .select("*", { count: "exact" })
-    //       .eq("status", "CANCELLED")
-    //       .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //       .lte(
-    //         "inserted_at",
-    //         dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //       );
-
-    //     console.log(cancelledTasksCount.count);
-    //     console.log(allTasksCount);
-    //     setGraphAllTasksCountByDate((prevCount: any) => {
-    //       return [...prevCount, allTasksCount.count];
-    //     });
-    //     setGraphPendingTasksCountByDate((prevCount: any) => {
-    //       return [...prevCount, pendingTasksCount.count];
-    //     });
-    //     setGraphCancelledTasksCountByDate((prevCount: any) => {
-    //       return [...prevCount, completedTasksCount.count];
-    //     });
-    //     setGraphCompletedTasksCountByDate((prevCount: any) => {
-    //       return [...prevCount, cancelledTasksCount.count];
-    //     });
-    //   }
-    // }
   }, []);
+
+  useEffect(() => {
+    console.log(graphDates);
+    if (graphDates && graphDates.length > 0) {
+      for (let index = 0; index < graphDates.length; index++) {
+        const element = graphDates[index];
+
+        getGraphCountsAllDB(element).then((res) => {
+          setGraphAllTasksCountByDate((prevCount: any) => {
+            if (prevCount && prevCount.length > 0) {
+              return [...prevCount, res.allTasksCount];
+            } else {
+              return [res.allTasksCount];
+            }
+          });
+        });
+        getGraphCountsPendingDB(element).then((res) => {
+          setGraphPendingTasksCountByDate((prevCount: any) => {
+            if (prevCount && prevCount.length > 0) {
+              return [...prevCount, res.pendingTasksCount];
+            } else {
+              return [res.pendingTasksCount];
+            }
+          });
+        });
+        getGraphCountsCompletedDB(element).then((res) => {
+          setGraphCompletedTasksCountByDate((prevCount: any) => {
+            if (prevCount && prevCount.length > 0) {
+              return [...prevCount, res.completedTasksCount];
+            } else {
+              return [res.completedTasksCount];
+            }
+          });
+        });
+        getGraphCountsCancelledDB(element).then((res) => {
+          setGraphCancelledTasksCountByDate((prevCount: any) => {
+            if (prevCount && prevCount.length > 0) {
+              return [...prevCount, res.cancelledTasksCount];
+            } else {
+              return [res.cancelledTasksCount];
+            }
+          });
+        });
+      }
+    }
+  }, [graphDates]);
 
   const data = {
     labels: graphDates,

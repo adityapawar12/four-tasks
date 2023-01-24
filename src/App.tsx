@@ -15,6 +15,7 @@ import { ThemeProvider } from "./context/Theme";
 import styles from "./App.module.css";
 import { TaskProvider } from "./context/AddEditTask";
 import SignUp from "./components/SignUp";
+import { NoteProvider } from "./context/AddEditNote";
 
 const App = () => {
   return (
@@ -22,65 +23,67 @@ const App = () => {
       <AuthProvider>
         <ThemeProvider>
           <TaskProvider>
-            <TaskTypeProvider>
-              <SideNavProvider>
-                <React.Suspense fallback={"Loading..."}>
-                  <Routes>
-                    <Route
-                      path={`/`}
-                      element={
-                        <RequireAuth>
-                          <Login />
-                        </RequireAuth>
-                      }
-                    />
-                    <Route
-                      path={`/login`}
-                      element={
-                        <RequireAuth>
-                          <Login />
-                        </RequireAuth>
-                      }
-                    />
-                    <Route
-                      path={`/sign-up`}
-                      element={
-                        <RequireAuth>
-                          <SignUp />
-                        </RequireAuth>
-                      }
-                    />
+            <NoteProvider>
+              <TaskTypeProvider>
+                <SideNavProvider>
+                  <React.Suspense fallback={"Loading..."}>
+                    <Routes>
+                      <Route
+                        path={`/`}
+                        element={
+                          <RequireAuth>
+                            <Login />
+                          </RequireAuth>
+                        }
+                      />
+                      <Route
+                        path={`/login`}
+                        element={
+                          <RequireAuth>
+                            <Login />
+                          </RequireAuth>
+                        }
+                      />
+                      <Route
+                        path={`/sign-up`}
+                        element={
+                          <RequireAuth>
+                            <SignUp />
+                          </RequireAuth>
+                        }
+                      />
 
-                    <Route
-                      path={`/home`}
-                      element={
-                        <RequireAuth>
-                          <Home />
-                        </RequireAuth>
-                      }
-                    />
-                    <Route
-                      path={`/tasks`}
-                      element={
-                        <RequireAuth>
-                          <Tasks />
-                        </RequireAuth>
-                      }
-                    />
-                    <Route
-                      path={`/notes`}
-                      element={
-                        <RequireAuth>
-                          <Notes />
-                        </RequireAuth>
-                      }
-                    />
+                      <Route
+                        path={`/home`}
+                        element={
+                          <RequireAuth>
+                            <Home />
+                          </RequireAuth>
+                        }
+                      />
+                      <Route
+                        path={`/tasks`}
+                        element={
+                          <RequireAuth>
+                            <Tasks />
+                          </RequireAuth>
+                        }
+                      />
+                      <Route
+                        path={`/notes`}
+                        element={
+                          <RequireAuth>
+                            <Notes />
+                          </RequireAuth>
+                        }
+                      />
 
-                    <Route path={`*`} element={<NoMatch />} />
-                  </Routes>
-                </React.Suspense>
-              </SideNavProvider>
-            </TaskTypeProvider>
+                      <Route path={`*`} element={<NoMatch />} />
+                    </Routes>
+                  </React.Suspense>
+                </SideNavProvider>
+              </TaskTypeProvider>
+            </NoteProvider>
           </TaskProvider>
         </ThemeProvider>
       </AuthProvider>

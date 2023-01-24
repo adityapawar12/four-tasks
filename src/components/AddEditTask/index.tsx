@@ -93,9 +93,9 @@ const AddEditTask = () => {
     taskContext?.toggleIsEditingTask();
   };
 
-  const [descriptionHeight, setDescriptionHeight] = useState<string | number>(
-    "auto"
-  );
+  const [descriptionHeight, setDescriptionHeight] = useState<
+    string | number | any
+  >("auto");
   const [descriptionOverflow, setDescriptionOverflow] =
     useState<string>("hidden");
 
