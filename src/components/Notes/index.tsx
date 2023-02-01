@@ -232,8 +232,8 @@ const Notes = () => {
       <SharedComponents
         showHeader={true}
         showSideNav={true}
-        showAddTask={true}
-        showAddNote={false}
+        showAddTask={false}
+        showAddNote={true}
         showFooter={false}
       />
 
