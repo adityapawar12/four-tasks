@@ -1,14 +1,14 @@
 import SharedComponents from "../SharedComponents";
 
-import { Line } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import { useSideNav } from "../../context/SideNav";
 import { supabase } from "../../supabaseClient";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
-import dayjs from "dayjs";
-import { useAuth } from "../../context/Auth";
+import { TaskInterface } from "../../models/Task";
 Chart.register(CategoryScale);
+
+import styles from "./styles.module.css";
 
 type TaskCountType = {
   allTasksCount: number;
@@ -18,271 +18,69 @@ type TaskCountType = {
 };
 
 const Home = () => {
-  const authContext = useAuth();
   const [allTopCount, setAllTopCount] = useState<TaskCountType>({
     allTasksCount: 0,
     pendingTasksCount: 0,
     completedTasksCount: 0,
     cancelledTasksCount: 0,
   });
-  const [graphDates, setGraphDates] = useState<Array<string> | any>(undefined);
-  const [graphAllTasksCountByDate, setGraphAllTasksCountByDate] =
-    useState<Array<number> | null>([]);
-  const [graphPendingTasksCountByDate, setGraphPendingTasksCountByDate] =
-    useState<Array<number> | null>([]);
-  const [graphCompletedTasksCountByDate, setGraphCompletedTasksCountByDate] =
-    useState<Array<number> | null>([]);
-  const [graphCancelledTasksCountByDate, setGraphCancelledTasksCountByDate] =
-    useState<Array<number> | null>([]);
+  const [tasksList, setTasksList] = useState<Map<
+    string,
+    Array<TaskInterface>
+  > | null>(null);
 
   const sideNavContext = useSideNav();
 
-  const getAllTasksCountDB = async (): Promise<any> => {
-    const userId = JSON.parse(localStorage.getItem(`userLoginInfo`) || "").id;
-    const allTasksCount = await supabase
-      .from("tasks")
-      .select("*", { count: "exact" })
-      .eq("user_id", userId);
-    const pendingTasksCount = await supabase
-      .from("tasks")
-      .select("*", { count: "exact" })
-      .eq("status", "PENDING")
-      .eq("user_id", userId);
-    const completedTasksCount = await supabase
-      .from("tasks")
-      .select("*", { count: "exact" })
-      .eq("status", "COMPLETED")
-      .eq("user_id", userId);
-    const cancelledTasksCount = await supabase
-      .from("tasks")
-      .select("*", { count: "exact" })
-      .eq("status", "CANCELLED")
-      .eq("user_id", userId);
-    return {
-      allTasksCount,
-      pendingTasksCount,
-      completedTasksCount,
-      cancelledTasksCount,
-    };
+  const getTopCardsCountsDB = async () => {
+    try {
+      const { data, error } = await supabase.rpc("hp_top_cards_counts");
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (error: any) {
+      console.log("Error fetching top cards counts >>> ", error.message);
+    }
   };
 
-  const getGraphCountsAllDB = async (element: string): Promise<any> => {
-    const { count }: any = await supabase
-      .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
-    return {
-      allTasksCount: count,
-    };
-  };
-
-  const getGraphCountsPendingDB = async (element: string): Promise<any> => {
-    const { count }: any = await supabase
-      .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "PENDING")
-      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
-    return {
-      pendingTasksCount: count,
-    };
-  };
-
-  const getGraphCountsCompletedDB = async (element: string): Promise<any> => {
-    const { count }: any = await supabase
-      .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "COMPLETED")
-      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
-    return {
-      completedTasksCount: count,
-    };
-  };
-
-  const getGraphCountsCancelledDB = async (element: string): Promise<any> => {
-    const { count }: any = await supabase
-      .from("tasks")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "CANCELLED")
-      .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-      .lte("inserted_at", dayjs(element).add(1, "day").format("YYYY-MM-DD"));
-    return {
-      cancelledTasksCount: count,
-    };
-  };
-
-  const getGraphDataDB = async (): Promise<any> => {
-    const { data }: any = await supabase.from("tasks").select("inserted_at");
-    return data;
+  const getRecentPendingTasksDB = async () => {
+    try {
+      const { data, error } = await supabase.rpc("hp_recent_pending_tasks");
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (error: any) {
+      console.log("Error fetching recent pending tasks >>>", error.message);
+    }
   };
 
   useEffect(() => {
-    getAllTasksCountDB().then((res: any) => {
-      let countsObj: TaskCountType = {
-        allTasksCount: res.allTasksCount.count,
-        pendingTasksCount: res.pendingTasksCount.count,
-        completedTasksCount: res.completedTasksCount.count,
-        cancelledTasksCount: res.cancelledTasksCount.count,
-      };
-      setAllTopCount(countsObj);
-    });
-    getGraphDataDB().then(async (res: any) => {
-      for (let index = 0; index < res.length; index++) {
-        const element = res[index];
-        console.log(element);
-        if (graphDates) {
-          if (!graphDates.includes(element.inserted_at)) {
-            await setGraphDates((prevGraphDates: any) => {
-              return [...prevGraphDates, element.inserted_at];
-            });
-          }
-        } else {
-          await setGraphDates([element.inserted_at]);
-        }
-        return graphDates;
-      }
-    });
-    // .then((dates) => {
-    //   if (dates && dates.length > 0) {
-    //     for (let index = 0; index < dates.length; index++) {
-    //       const element = dates[index];
-    //       const { allTasksCount }: any = supabase
-    //         .from("tasks")
-    //         .select("*", { count: "exact" })
-    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //         .lte(
-    //           "inserted_at",
-    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //         );
-    //       const { pendingTasksCount }: any = supabase
-    //         .from("tasks")
-    //         .select("*", { count: "exact" })
-    //         .eq("status", "PENDING")
-    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //         .lte(
-    //           "inserted_at",
-    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //         );
-    //       const { completedTasksCount }: any = supabase
-    //         .from("tasks")
-    //         .select("*", { count: "exact" })
-    //         .eq("status", "COMPLETED")
-    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //         .lte(
-    //           "inserted_at",
-    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //         );
-    //       const { cancelledTasksCount }: any = supabase
-    //         .from("tasks")
-    //         .select("*", { count: "exact" })
-    //         .eq("status", "CANCELLED")
-    //         .gte("inserted_at", dayjs(element).format("YYYY-MM-DD"))
-    //         .lte(
-    //           "inserted_at",
-    //           dayjs(element).add(1, "day").format("YYYY-MM-DD")
-    //         );
-    //       setGraphAllTasksCountByDate((prevCount: any) => {
-    //         return [...prevCount, allTasksCount.count];
-    //       });
-    //       setGraphPendingTasksCountByDate((prevCount: any) => {
-    //         return [...prevCount, pendingTasksCount.count];
-    //       });
-    //       setGraphCancelledTasksCountByDate((prevCount: any) => {
-    //         return [...prevCount, completedTasksCount.count];
-    //       });
-    //       setGraphCompletedTasksCountByDate((prevCount: any) => {
-    //         return [...prevCount, cancelledTasksCount.count];
-    //       });
-    //     }
-    //   }
-    // });
+    getTopCardsCountsDB()
+      .then((data: any) => {
+        setAllTopCount({
+          allTasksCount: data[0].alltaskscount,
+          pendingTasksCount: data[0].pendingtaskscount,
+          completedTasksCount: data[0].completedtaskscount,
+          cancelledTasksCount: data[0].cancelledtaskscount,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   useEffect(() => {
-    console.log(graphDates);
-    if (graphDates && graphDates.length > 0) {
-      for (let index = 0; index < graphDates.length; index++) {
-        const element = graphDates[index];
-
-        getGraphCountsAllDB(element).then((res) => {
-          setGraphAllTasksCountByDate((prevCount: any) => {
-            if (prevCount && prevCount.length > 0) {
-              return [...prevCount, res.allTasksCount];
-            } else {
-              return [res.allTasksCount];
-            }
-          });
-        });
-        getGraphCountsPendingDB(element).then((res) => {
-          setGraphPendingTasksCountByDate((prevCount: any) => {
-            if (prevCount && prevCount.length > 0) {
-              return [...prevCount, res.pendingTasksCount];
-            } else {
-              return [res.pendingTasksCount];
-            }
-          });
-        });
-        getGraphCountsCompletedDB(element).then((res) => {
-          setGraphCompletedTasksCountByDate((prevCount: any) => {
-            if (prevCount && prevCount.length > 0) {
-              return [...prevCount, res.completedTasksCount];
-            } else {
-              return [res.completedTasksCount];
-            }
-          });
-        });
-        getGraphCountsCancelledDB(element).then((res) => {
-          setGraphCancelledTasksCountByDate((prevCount: any) => {
-            if (prevCount && prevCount.length > 0) {
-              return [...prevCount, res.cancelledTasksCount];
-            } else {
-              return [res.cancelledTasksCount];
-            }
-          });
-        });
-      }
-    }
-  }, [graphDates]);
-
-  const data = {
-    labels: graphDates,
-    datasets: [
-      {
-        label: "All",
-        data: graphAllTasksCountByDate,
-      },
-      {
-        label: "Pending",
-        data: graphPendingTasksCountByDate,
-      },
-      {
-        label: "Completed",
-        data: graphCompletedTasksCountByDate,
-      },
-      {
-        label: "Cancelled",
-        data: graphCancelledTasksCountByDate,
-      },
-    ],
-  };
-
-  const options = {
-    plugins: {
-      title: {
-        display: true,
-        text: "Line Chart",
-      },
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 6,
-        stepSize: 1,
-      },
-    },
-  };
+    getRecentPendingTasksDB()
+      .then((data: any) => {
+        // console.log(data);
+        setTasksList(data);
+        console.log(tasksList);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <>
@@ -294,7 +92,7 @@ const Home = () => {
         showFooter={false}
       />
       <div
-        className={`flex sm:flex-row flex-col mt-24 ${
+        className={`flex sm:flex-row flex-col mt-24 overflow-auto ${
           sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
         }`}
       >
@@ -302,56 +100,76 @@ const Home = () => {
           className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
           <div
-            className={`basis-1/2 bg-violet-600 rounded-2xl m-2 text-white p-5 px-0 flex flex-col justify-center align-middle items-center`}
+            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-md font-semibold`}>No. of</div>
-            <div className={`text-md font-semibold`}>All Tasks</div>
-            <div className={`text-4xl font-bold `}>
+            <div className={`text-4xl font-semibold p-1`}>
               {allTopCount.allTasksCount}
             </div>
+            <div className={` text-xs font-bold mt-1`}>All Tasks</div>
           </div>
           <div
-            className={`basis-1/2 bg-violet-600 rounded-2xl m-2 text-white p-5 px-0 flex flex-col justify-center align-middle items-center`}
+            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-md font-semibold`}>No. of</div>
-            <div className={`text-md font-semibold`}>Completed Tasks</div>
-            <div className={`text-4xl font-bold `}>
+            <div className={`text-4xl font-semibold p-1`}>
               {allTopCount.completedTasksCount}
             </div>
+            <div className={` text-xs font-bold mt-1`}>Completed Tasks</div>
           </div>
         </div>
         <div
           className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
           <div
-            className={`basis-1/2 bg-violet-600 rounded-2xl m-2 text-white p-5 px-0 flex flex-col justify-center align-middle items-center`}
+            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-md font-semibold`}>No. of</div>
-            <div className={`text-md font-semibold`}>Pending Tasks</div>
-            <div className={`text-4xl font-bold `}>
+            <div className={`text-4xl font-semibold p-1`}>
               {allTopCount.pendingTasksCount}
             </div>
+            <div className={` text-xs font-bold mt-1`}>Pending Tasks</div>
           </div>
           <div
-            className={`basis-1/2 bg-violet-600 rounded-2xl m-2 text-white p-5 px-0 flex flex-col justify-center align-middle items-center`}
+            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-md font-semibold`}>No. of</div>
-            <div className={`text-md font-semibold`}>Cancelled Tasks</div>
-            <div className={`text-4xl font-bold `}>
+            <div className={`text-4xl font-semibold p-1`}>
               {allTopCount.cancelledTasksCount}
             </div>
+            <div className={` text-xs font-bold mt-1`}>Cancelled Tasks</div>
           </div>
         </div>
       </div>
+
       <div
-        className={`flex sm:flex-row flex-col h-screen w-auto mt-4 ${
+        className={`flex sm:flex-row flex-col mt-2 ${
           sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
         }`}
       >
         <div
-          className={`basis-1/2 h-full sm:basis-full flex flex-row justify-center align-middle items-center`}
+          className={`basis-full flex flex-row justify-start align-middle items-start`}
         >
-          <Line data={data} />
+          <h3 className={`text-xl sm:text-2xl font-semibold m-2`}>
+            Recent Pending Tasks
+          </h3>
+        </div>
+      </div>
+      <div
+        className={`flex sm:flex-row flex-col mt-2 ${
+          sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
+        }`}
+      >
+        <div
+          className={`basis-1/2 sm:basis-full flex flex-row justify-start align-middle items-start`}
+        >
+          {tasksList &&
+            Array.from(tasksList!.entries()).map(([key, value]: any) => (
+              <div
+                key={key.id}
+                className={`text-xl font-normal basis-1/4 rounded-xl shadow-lg p-4 m-2`}
+              >
+                {value.title.length > 100
+                  ? `${value.title.substring(0, 100)}...`
+                  : value.title}
+              </div>
+            ))}
         </div>
       </div>
     </>
