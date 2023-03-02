@@ -39,7 +39,7 @@ const Home = () => {
       }
       return data;
     } catch (error: any) {
-      console.log("Error fetching top cards counts >>> ", error.message);
+      throw error;
     }
   };
 
@@ -51,7 +51,7 @@ const Home = () => {
       }
       return data;
     } catch (error: any) {
-      console.log("Error fetching recent pending tasks >>>", error.message);
+      throw error;
     }
   };
 
@@ -66,19 +66,17 @@ const Home = () => {
         });
       })
       .catch((error) => {
-        console.log(error);
+        throw error;
       });
   }, []);
 
   useEffect(() => {
     getRecentPendingTasksDB()
       .then((data: any) => {
-        // console.log(data);
         setTasksList(data);
-        console.log(tasksList);
       })
       .catch((error) => {
-        console.log(error);
+        throw error;
       });
   }, []);
 
@@ -102,18 +100,18 @@ const Home = () => {
           <div
             className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-4xl font-semibold p-1`}>
+            <div className={`text-2xl font-semibold p-1`}>
               {allTopCount.allTasksCount}
             </div>
-            <div className={` text-xs font-bold mt-1`}>All Tasks</div>
+            <div className={`text-xs font-semibold mt-1`}>Tasks</div>
           </div>
           <div
             className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-4xl font-semibold p-1`}>
+            <div className={`text-2xl font-semibold p-1`}>
               {allTopCount.completedTasksCount}
             </div>
-            <div className={` text-xs font-bold mt-1`}>Completed Tasks</div>
+            <div className={`text-xs font-semibold mt-1`}>Completed</div>
           </div>
         </div>
         <div
@@ -122,18 +120,18 @@ const Home = () => {
           <div
             className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-4xl font-semibold p-1`}>
+            <div className={`text-2xl font-semibold p-1`}>
               {allTopCount.pendingTasksCount}
             </div>
-            <div className={` text-xs font-bold mt-1`}>Pending Tasks</div>
+            <div className={`text-xs font-semibold mt-1`}>Pending</div>
           </div>
           <div
             className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
           >
-            <div className={`text-4xl font-semibold p-1`}>
+            <div className={`text-2xl font-semibold p-1`}>
               {allTopCount.cancelledTasksCount}
             </div>
-            <div className={` text-xs font-bold mt-1`}>Cancelled Tasks</div>
+            <div className={`text-xs font-semibold mt-1`}>Cancelled</div>
           </div>
         </div>
       </div>
@@ -146,7 +144,7 @@ const Home = () => {
         <div
           className={`basis-full flex flex-row justify-start align-middle items-start`}
         >
-          <h3 className={`text-xl sm:text-2xl font-semibold m-2`}>
+          <h3 className={`text-lg sm:text-xl font-semibold m-2`}>
             Recent Pending Tasks
           </h3>
         </div>
@@ -159,17 +157,19 @@ const Home = () => {
         <div
           className={`basis-1/2 sm:basis-full flex flex-row justify-start align-middle items-start`}
         >
-          {tasksList &&
-            Array.from(tasksList!.entries()).map(([key, value]: any) => (
-              <div
-                key={key.id}
-                className={`text-xl font-normal basis-1/4 rounded-xl shadow-lg p-4 m-2`}
-              >
-                {value.title.length > 100
-                  ? `${value.title.substring(0, 100)}...`
-                  : value.title}
-              </div>
-            ))}
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
+            {tasksList &&
+              Array.from(tasksList!.entries()).map(([key, value]: any) => (
+                <div
+                  key={key.id}
+                  className={`text-base font-medium border-[1px] border-gray-200 shadow-none hover:shadow-md hover:shadow-slate-300 hover:border-gray-400 rounded-xl break-inside-avoid-column p-4`}
+                >
+                  {value.title.length > 100
+                    ? `${value.title.substring(0, 100)}...`
+                    : value.title}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </>

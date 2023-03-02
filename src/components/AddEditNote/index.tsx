@@ -296,7 +296,7 @@ const AddEditNote = () => {
           onClick={() => {
             setIsAddNoteFormOpen(true);
           }}
-          className={`bg-white hover:bg-violet-700 z-50  text-violet-700 hover:text-white shadow-2xl shadow-slate-700 text-6xl p-3 rounded-2xl fixed bottom-0 mb-4 right-4`}
+          className={`bg-white hover:bg-violet-700 z-50  text-violet-700 hover:text-white shadow-lg shadow-slate-300 text-6xl p-3 rounded-2xl fixed bottom-0 mb-4 right-4`}
         />
       ) : null}
     </>

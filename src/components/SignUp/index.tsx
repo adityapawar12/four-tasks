@@ -95,7 +95,7 @@ const SignUp = () => {
         className={`${styles.mainSvgPattern} flex flex-col sm:flex-row items-center justify-end h-screen`}
       >
         <div
-          className={`${styles.mainSvgPatternOpp} text-center shadow-lg shadow-black text-slate-600 h-4/5 w-full sm:w-1/2 sm:h-screen`}
+          className={`${styles.mainSvgPatternOpp} text-center shadow-lg shadow-slate-300 text-slate-600 h-4/5 w-full sm:w-1/2 sm:h-screen`}
         >
           <div
             className={`flex flex-col justify-start sm:justify-center items-stretch h-full`}
