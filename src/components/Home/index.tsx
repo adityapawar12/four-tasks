@@ -8,7 +8,8 @@ import { CategoryScale } from "chart.js";
 import { TaskInterface } from "../../models/Task";
 Chart.register(CategoryScale);
 
-import styles from "./styles.module.css";
+import Task from "../Task";
+import HomeTopCards from "../HomeTopCards";
 
 type TaskCountType = {
   allTasksCount: number;
@@ -97,42 +98,23 @@ const Home = () => {
         <div
           className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
-          <div
-            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
-          >
-            <div className={`text-2xl font-semibold p-1`}>
-              {allTopCount.allTasksCount}
-            </div>
-            <div className={`text-xs font-semibold mt-1`}>Tasks</div>
-          </div>
-          <div
-            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
-          >
-            <div className={`text-2xl font-semibold p-1`}>
-              {allTopCount.completedTasksCount}
-            </div>
-            <div className={`text-xs font-semibold mt-1`}>Completed</div>
-          </div>
+          <HomeTopCards tasksCount={allTopCount.allTasksCount} text={`Tasks`} />
+          <HomeTopCards
+            tasksCount={allTopCount.completedTasksCount}
+            text={`Completed`}
+          />
         </div>
         <div
           className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
-          <div
-            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
-          >
-            <div className={`text-2xl font-semibold p-1`}>
-              {allTopCount.pendingTasksCount}
-            </div>
-            <div className={`text-xs font-semibold mt-1`}>Pending</div>
-          </div>
-          <div
-            className={`basis-1/2 bg-violet-600 ${styles.topCards} rounded-2xl m-2 text-white py-2 px-6 flex flex-ro justify-start items-start`}
-          >
-            <div className={`text-2xl font-semibold p-1`}>
-              {allTopCount.cancelledTasksCount}
-            </div>
-            <div className={`text-xs font-semibold mt-1`}>Cancelled</div>
-          </div>
+          <HomeTopCards
+            tasksCount={allTopCount.pendingTasksCount}
+            text={`Pending`}
+          />
+          <HomeTopCards
+            tasksCount={allTopCount.cancelledTasksCount}
+            text={`Cancelled`}
+          />
         </div>
       </div>
 
@@ -160,13 +142,8 @@ const Home = () => {
           <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
             {tasksList &&
               Array.from(tasksList!.entries()).map(([key, value]: any) => (
-                <div
-                  key={key.id}
-                  className={`text-base font-medium border-[1px] border-gray-200 shadow-none hover:shadow-md hover:shadow-slate-300 hover:border-gray-400 rounded-xl break-inside-avoid-column p-4`}
-                >
-                  {value.title.length > 100
-                    ? `${value.title.substring(0, 100)}...`
-                    : value.title}
+                <div key={value.id}>
+                  <Task task={value} />
                 </div>
               ))}
           </div>

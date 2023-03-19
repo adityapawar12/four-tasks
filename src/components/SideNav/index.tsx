@@ -13,19 +13,13 @@ const SideNav = () => {
   const sideNavCont = useSideNav();
 
   return (
-    <>
+    <div>
       {sideNavCont?.sideNav.isOpen ? (
-        <div>
-          <div
-            onClick={() => {
-              sideNavCont?.toggleSideNav!();
-            }}
-            className={`absolute left-72 top-16 mt-1 hidden sm:block z-50 text-xl py-2 px-1`}
-          >
-            <FaTimesCircle
-              className={`text-2xl text-violet-700 bg-white hover:bg-violet-700 hover:text-white rounded-full`}
-            />
-          </div>
+        <div
+          onMouseLeave={() => {
+            sideNavCont?.toggleSideNav!();
+          }}
+        >
           <div
             className={`fixed overflow-y-auto overflow-x-hidden top-16 sm:top-20 left-0 sm:left-4 bottom-0 sm:bottom-4 rounded-none sm:rounded-2xl w-64 sm:w-72 shadow-sm sm:shadow-lg shadow-slate-300 z-40 bg-white text-slate-900 p-4`}
           >
@@ -71,17 +65,15 @@ const SideNav = () => {
         </div>
       ) : (
         <div
+          onMouseEnter={() => {
+            sideNavCont?.toggleSideNav!();
+          }}
+          onMouseLeave={() => {
+            sideNavCont?.toggleSideNav!();
+          }}
           className={`fixed overflow-y-auto hidden sm:block overflow-x-hidden top-20 left-4 bottom-4 rounded-2xl w-14 shadow-lg shadow-slate-300 z-40 bg-white text-slate-900 p-2`}
         >
           <div className={`flex flex-col`}>
-            <div
-              onClick={() => {
-                sideNavCont?.toggleSideNav!();
-              }}
-              className={`p-3 mt-3 mb-2 flex align-bottom items-center hover:bg-violet-700 hover:text-white text-violet-700 bg-white rounded-2xl`}
-            >
-              <FaBars />
-            </div>
             <NavLink
               className={({ isActive }) =>
                 isActive
@@ -118,7 +110,7 @@ const SideNav = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
