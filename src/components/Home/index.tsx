@@ -142,7 +142,7 @@ const Home = () => {
           <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
             {tasksList &&
               Array.from(tasksList!.entries()).map(([key, value]: any) => (
-                <div key={value.id}>
+                <div className={`mb-3`} key={value.id}>
                   <Task task={value} />
                 </div>
               ))}

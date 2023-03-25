@@ -16,6 +16,7 @@ import styles from "./App.module.css";
 import { TaskProvider } from "./context/AddEditTask";
 import SignUp from "./components/SignUp";
 import { NoteProvider } from "./context/AddEditNote";
+import TasksList from "./components/TasksList";
 
 const App = () => {
   return (
@@ -65,7 +66,7 @@ const App = () => {
                         path={`/tasks`}
                         element={
                           <RequireAuth>
-                            <Tasks />
+                            <TasksList />
                           </RequireAuth>
                         }
                       />

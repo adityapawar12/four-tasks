@@ -19,3 +19,8 @@ export enum TaskStatusEnum {
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
 }
+
+export enum TasksViewEnum {
+  LIST = "LIST",
+  GRID = "GRID",
+}
