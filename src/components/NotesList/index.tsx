@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import {
-  TaskInterface,
-  TaskStatusEnum,
-  TasksViewEnum,
-} from "../../models/Task";
 import { supabase } from "../../supabaseClient";
 import SharedComponents from "../SharedComponents";
-import Task from "../Task";
+import Note from "../Note";
 import { useSideNav } from "../../context/SideNav";
 import { FaThList, FaTh, FaFilter } from "react-icons/fa";
 import "react-tooltip/dist/react-tooltip.css";
@@ -14,84 +9,57 @@ import { Tooltip } from "react-tooltip";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import FormikControls from "../formik/ReusableComponents/FormikControls";
+import { NoteInterface, NotesViewEnum } from "../../models/Note";
 
-type TasksFilterType = {
+type NotesFilterType = {
   fromdate: string | null;
   todate: string | null;
-  statustext: TaskStatusEnum | "" | null;
   searchtext: string | null;
 };
 
-const TasksList = () => {
-  const [tasksList, setTasksList] = useState<Map<
+const NotesList = () => {
+  const [notesList, setNotesList] = useState<Map<
     string,
-    Array<TaskInterface>
+    Array<NoteInterface>
   > | null>(null);
-  const [tasksListView, setTasksListView] = useState<TasksViewEnum>(
-    TasksViewEnum.GRID
+  const [notesListView, setNotesListView] = useState<NotesViewEnum>(
+    NotesViewEnum.GRID
   );
 
-  const [showTaskFilterPopup, setShowTaskFilterPopup] =
+  const [showNoteFilterPopup, setShowNoteFilterPopup] =
     useState<boolean>(false);
-  let taskFilterFormInitialValues: TasksFilterType = {
+  let noteFilterFormInitialValues: NotesFilterType = {
     fromdate: "",
     todate: "",
-    statustext: "",
     searchtext: "",
   };
-  const [taskFilterFormValues, setTaskFilterFormValues] =
-    useState<TasksFilterType | null>(taskFilterFormInitialValues);
-  const taskFilterValidationSchema = Yup.object({
+  const [noteFilterFormValues, setNoteFilterFormValues] =
+    useState<NotesFilterType | null>(noteFilterFormInitialValues);
+  const noteFilterValidationSchema = Yup.object({
     fromdate: Yup.string().nullable(),
     todate: Yup.string().nullable(),
-    statustext: Yup.string().nullable(),
     searchtext: Yup.string().nullable(),
   });
 
-  const dropdownOptionsFilterForm = [
-    { key: "Select Status", value: "" },
-    {
-      key: "All",
-      value: "ALL",
-    },
-    {
-      key: "Pending",
-      value: "PENDING",
-    },
-    {
-      key: "Completed",
-      value: "COMPLETED",
-    },
-    {
-      key: "Cancelled",
-      value: "CANCELLED",
-    },
-  ];
-
   const sideNavContext = useSideNav();
 
-  const getTasksListDB = async ({
+  const getNotesListDB = async ({
     fromdate,
     todate,
-    statustext,
     searchtext,
-  }: TasksFilterType) => {
+  }: NotesFilterType) => {
     if (fromdate === "") {
       fromdate = null;
     }
     if (todate === "") {
       todate = null;
     }
-    if (statustext === "" || statustext === TaskStatusEnum.ALL) {
-      statustext = null;
-    }
     if (searchtext === "") {
       searchtext = null;
     }
-    const { data, error } = await supabase.rpc("tp_get_tasks", {
+    const { data, error } = await supabase.rpc("np_get_notes", {
       fromdate,
       todate,
-      statustext,
       searchtext,
     });
     if (error) {
@@ -102,9 +70,10 @@ const TasksList = () => {
   };
 
   useEffect(() => {
-    getTasksListDB(taskFilterFormInitialValues)
+    getNotesListDB(noteFilterFormInitialValues)
       .then((data: any) => {
-        setTasksList(data);
+        console.log(data);
+        setNotesList(data);
       })
       .catch((error) => {
         throw error;
@@ -131,16 +100,16 @@ const TasksList = () => {
           } sm:basis-full flex flex-row justify-self-stretch align-middle items-start`}
         >
           <div className={`basis-1/2 flex flex-row justify-start mx-2`}>
-            <h1 className={`text-2xl font-semibold`}>Tasks</h1>
+            <h1 className={`text-2xl font-semibold`}>Notes</h1>
           </div>
           <div className={`basis-1/2 flex flex-row justify-end mx-2`}>
             <div
               className={`${
-                tasksListView === TasksViewEnum.GRID
+                notesListView === NotesViewEnum.GRID
                   ? "bg-violet-700 text-white border-2 border-violet-700"
                   : "bg-white text-violet-400 border-2 border-violet-700"
               } flex flex-row p-2 rounded-l-lg transition-all duration-500`}
-              onClick={() => setTasksListView(TasksViewEnum.GRID)}
+              onClick={() => setNotesListView(NotesViewEnum.GRID)}
             >
               <div className={`mx-2`}>
                 <FaTh />
@@ -148,11 +117,11 @@ const TasksList = () => {
             </div>
             <div
               className={`${
-                tasksListView === TasksViewEnum.LIST
+                notesListView === NotesViewEnum.LIST
                   ? "bg-violet-700 text-white border-2 border-violet-700"
                   : "bg-white text-violet-400 border-2 border-violet-700"
               } flex flex-row p-2 rounded-r-lg transition-all duration-500`}
-              onClick={() => setTasksListView(TasksViewEnum.LIST)}
+              onClick={() => setNotesListView(NotesViewEnum.LIST)}
             >
               <div className={`mx-2`}>
                 <FaThList />
@@ -160,13 +129,13 @@ const TasksList = () => {
             </div>
             <div
               className={`${
-                showTaskFilterPopup === true
+                showNoteFilterPopup === true
                   ? "bg-violet-700 text-white border-2 border-violet-700"
                   : "bg-white text-violet-400 border-2 border-violet-700"
               } flex flex-row p-2 rounded-lg ml-2 transition-all duration-500`}
               onClick={() =>
-                setShowTaskFilterPopup(
-                  (prevShowTaskFilterPopup) => !prevShowTaskFilterPopup
+                setShowNoteFilterPopup(
+                  (prevShowNoteFilterPopup) => !prevShowNoteFilterPopup
                 )
               }
             >
@@ -177,7 +146,7 @@ const TasksList = () => {
             <Tooltip
               anchorSelect="#clickable"
               place={"bottom"}
-              isOpen={showTaskFilterPopup}
+              isOpen={showNoteFilterPopup}
               clickable
               offset={20}
               style={{
@@ -190,22 +159,22 @@ const TasksList = () => {
             >
               <Formik
                 initialValues={
-                  taskFilterFormValues || taskFilterFormInitialValues
+                  noteFilterFormValues || noteFilterFormInitialValues
                 }
-                onSubmit={(values: TasksFilterType) => {
-                  setTaskFilterFormValues(values);
+                onSubmit={(values: NotesFilterType) => {
+                  setNoteFilterFormValues(values);
                   if (values !== null) {
-                    getTasksListDB(values)
+                    getNotesListDB(values)
                       .then((data: any) => {
-                        setTasksList(data);
-                        setShowTaskFilterPopup(false);
+                        setNotesList(data);
+                        setShowNoteFilterPopup(false);
                       })
                       .catch((error) => {
                         throw error;
                       });
                   }
                 }}
-                validationSchema={taskFilterValidationSchema}
+                validationSchema={noteFilterValidationSchema}
                 enableReinitialize
               >
                 {(formik) => {
@@ -225,24 +194,6 @@ const TasksList = () => {
                               name={"searchtext"}
                               type={"text"}
                               label={"Enter Email"}
-                              showLabel={false}
-                              className={`w-full py-1 px-2 rounded-sm`}
-                            />
-                          </div>
-                        </div>
-                        <div className={`flex flex-col w-full text-black mb-2`}>
-                          <div className={`basis-auto text-start`}>
-                            <label
-                              htmlFor="searchtext"
-                              className={`text-white`}
-                            >
-                              Status
-                            </label>
-                            <FormikControls
-                              control={"select"}
-                              name={"statustext"}
-                              options={dropdownOptionsFilterForm}
-                              label={"Enter statustext"}
                               showLabel={false}
                               className={`w-full py-1 px-2 rounded-sm`}
                             />
@@ -295,14 +246,14 @@ const TasksList = () => {
                             className={`basis-auto bg-white text-violet-700 py-1 px-2 ml-1 rounded-sm`}
                             type={`reset`}
                             onClick={() => {
-                              setTaskFilterFormValues(
-                                taskFilterFormInitialValues
+                              setNoteFilterFormValues(
+                                noteFilterFormInitialValues
                               );
-                              if (taskFilterFormInitialValues !== null) {
-                                getTasksListDB(taskFilterFormInitialValues)
+                              if (noteFilterFormInitialValues !== null) {
+                                getNotesListDB(noteFilterFormInitialValues)
                                   .then((data: any) => {
-                                    setTasksList(data);
-                                    setShowTaskFilterPopup(false);
+                                    setNotesList(data);
+                                    setShowNoteFilterPopup(false);
                                   })
                                   .catch((error) => {
                                     throw error;
@@ -323,7 +274,7 @@ const TasksList = () => {
         </div>
       </div>
 
-      {tasksListView === TasksViewEnum.GRID && (
+      {notesListView === NotesViewEnum.GRID && (
         <div
           className={`flex sm:flex-row flex-col mt-2 ${
             sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
@@ -337,17 +288,17 @@ const TasksList = () => {
             } sm:basis-full flex flex-row justify-start align-middle items-start`}
           >
             <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
-              {tasksList &&
-                Array.from(tasksList!.entries()).map(([key, value]: any) => (
+              {notesList &&
+                Array.from(notesList!.entries()).map(([key, value]: any) => (
                   <div className={`mb-3`} key={value.id}>
-                    <Task task={value} />
+                    <Note note={value} />
                   </div>
                 ))}
             </div>
           </div>
         </div>
       )}
-      {tasksListView === TasksViewEnum.LIST && (
+      {notesListView === NotesViewEnum.LIST && (
         <div
           className={`flex sm:flex-row flex-col mt-2 ${
             sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
@@ -361,10 +312,10 @@ const TasksList = () => {
             }`}
           >
             <div className="mx-2">
-              {tasksList &&
-                Array.from(tasksList!.entries()).map(([key, value]: any) => (
+              {notesList &&
+                Array.from(notesList!.entries()).map(([key, value]: any) => (
                   <div className={`mb-3`} key={value.id}>
-                    <Task task={value} />
+                    <Note note={value} />
                   </div>
                 ))}
             </div>
@@ -375,4 +326,4 @@ const TasksList = () => {
   );
 };
 
-export default TasksList;
+export default NotesList;

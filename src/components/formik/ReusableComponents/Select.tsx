@@ -3,13 +3,13 @@ import React from "react";
 import TextError from "./TextError";
 
 const Select = ({ name, options, label, showLabel, ...rest }: any) => {
-  React.useEffect(() => {
-    console.log(options);
-  }, []);
-
   return (
     <div>
-      {showLabel === true && <label htmlFor={name}>{label}</label>}
+      {showLabel === true && (
+        <label className={`w-full`} htmlFor={name}>
+          {label}
+        </label>
+      )}
       <Field className={`w-full`} as="select" name={name} id={name} {...rest}>
         {options.map((option: any, index: any) => {
           return (
@@ -19,7 +19,7 @@ const Select = ({ name, options, label, showLabel, ...rest }: any) => {
           );
         })}
       </Field>
-      <ErrorMessage name={name} component={TextError} />
+      <ErrorMessage className={`w-full`} name={name} component={TextError} />
     </div>
   );
 };

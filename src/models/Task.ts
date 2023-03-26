@@ -15,6 +15,7 @@ export interface TaskInterface {
 }
 
 export enum TaskStatusEnum {
+  ALL = "ALL",
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",

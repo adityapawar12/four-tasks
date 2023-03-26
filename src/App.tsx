@@ -4,8 +4,6 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import NoMatch from "./components/NoMatch";
 import Login from "./components/Login";
-import Tasks from "./components/Tasks";
-import Notes from "./components/Notes";
 import RequireAuth from "./components/RequireAuth";
 import { AuthProvider } from "./context/Auth";
 import { TaskTypeProvider } from "./context/TaskType";
@@ -17,6 +15,7 @@ import { TaskProvider } from "./context/AddEditTask";
 import SignUp from "./components/SignUp";
 import { NoteProvider } from "./context/AddEditNote";
 import TasksList from "./components/TasksList";
+import NotesList from "./components/NotesList";
 
 const App = () => {
   return (
@@ -74,7 +73,7 @@ const App = () => {
                         path={`/notes`}
                         element={
                           <RequireAuth>
-                            <Notes />
+                            <NotesList />
                           </RequireAuth>
                         }
                       />

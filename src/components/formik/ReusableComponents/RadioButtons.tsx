@@ -5,26 +5,33 @@ import React from "react";
 const RadioButtons = ({ label, name, options, showLabel, ...rest }: any) => {
   return (
     <div>
-      {showLabel === true && <label htmlFor={name}>{label}</label>}
-      <Field name={name} id={name} {...rest}>
+      {showLabel === true && (
+        <label className={`w-full`} htmlFor={name}>
+          {label}
+        </label>
+      )}
+      <Field className={`w-full`} name={name} id={name} {...rest}>
         {({ field }: any) => {
           return options.map((option: any) => {
             return (
               <React.Fragment key={option.key}>
                 <input
+                  className={`w-full`}
                   type="radio"
                   id={option.value}
                   {...field}
                   value={option.value}
                   checked={field.value === option.value}
                 ></input>
-                <label htmlFor={option.value}>{option.key}</label>
+                <label className={`w-full`} htmlFor={option.value}>
+                  {option.key}
+                </label>
               </React.Fragment>
             );
           });
         }}
       </Field>
-      <ErrorMessage name={name} component={TextError} />
+      <ErrorMessage className={`w-full`} name={name} component={TextError} />
     </div>
   );
 };

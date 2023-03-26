@@ -10,3 +10,8 @@ export interface NoteInterface {
   inserted_at?: Date;
   updated_at?: Date;
 }
+
+export enum NotesViewEnum {
+  LIST = "LIST",
+  GRID = "GRID",
+}

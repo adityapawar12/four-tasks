@@ -7,13 +7,18 @@ import React from "react";
 const DatePicker = ({ name, label, showLabel, ...rest }: any) => {
   return (
     <div>
-      {showLabel === true && <label htmlFor={name}>{label}</label>}
-      <Field name={name}>
+      {showLabel === true && (
+        <label className={`w-full`} htmlFor={name}>
+          {label}
+        </label>
+      )}
+      <Field className={`w-full`} name={name}>
         {({ form, field }: any) => {
           const { setFieldValue } = form;
           const { value } = field;
           return (
             <DateView
+              className={`w-full`}
               name={name}
               {...field}
               {...rest}
@@ -25,7 +30,7 @@ const DatePicker = ({ name, label, showLabel, ...rest }: any) => {
           );
         }}
       </Field>
-      <ErrorMessage name={name} component={TextError} />
+      <ErrorMessage className={`w-full`} name={name} component={TextError} />
     </div>
   );
 };

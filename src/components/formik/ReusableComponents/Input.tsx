@@ -5,9 +5,13 @@ import TextError from "./TextError";
 const Input = ({ label, name, showLabel, ...rest }: any) => {
   return (
     <div className="form-control">
-      {showLabel === true && <label htmlFor={name}>{label}</label>}
-      <Field name={name} />
-      <ErrorMessage name={name} component={TextError} />
+      {showLabel === true && (
+        <label className={`w-full`} htmlFor={name}>
+          {label}
+        </label>
+      )}
+      <Field className={`w-full`} name={name} {...rest} />
+      <ErrorMessage className={`w-full`} name={name} component={TextError} />
     </div>
   );
 };

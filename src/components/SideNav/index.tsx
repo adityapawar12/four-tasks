@@ -21,7 +21,7 @@ const SideNav = () => {
           }}
         >
           <div
-            className={`fixed overflow-y-auto overflow-x-hidden top-16 sm:top-20 left-0 sm:left-4 bottom-0 sm:bottom-4 rounded-none sm:rounded-2xl w-64 sm:w-72 shadow-sm sm:shadow-lg shadow-slate-300 z-40 bg-white text-slate-900 p-4`}
+            className={`fixed overflow-y-auto overflow-x-hidden top-16 sm:top-20 left-0 sm:left-4 bottom-0 sm:bottom-4 rounded-none sm:rounded-2xl w-64 shadow-sm sm:shadow-lg shadow-slate-300 z-40 bg-white text-slate-900 p-4`}
           >
             <div className={`flex flex-col`}>
               <NavLink
@@ -33,8 +33,14 @@ const SideNav = () => {
                 end
                 to={`/home`}
               >
-                <FaHome className={`basis-auto text-lg`} />
-                <p className={`basis-auto p-0 m-0 pl-2 text-lg`}>Home</p>
+                <FaHome
+                  className={`basis-auto transition-all duration-500 text-lg`}
+                />
+                <p
+                  className={`basis-auto p-0 m-0 pl-2 text-lg transition-all duration-300`}
+                >
+                  Home
+                </p>
               </NavLink>
               <NavLink
                 className={({ isActive }) =>
@@ -45,8 +51,14 @@ const SideNav = () => {
                 end
                 to={`/tasks`}
               >
-                <FaTasks className={`basis-auto text-lg`} />
-                <p className={`basis-auto p-0 m-0 pl-2 text-lg`}>Tasks</p>
+                <FaTasks
+                  className={`basis-auto transition-all duration-500 text-lg`}
+                />
+                <p
+                  className={`basis-auto p-0 m-0 pl-2 text-lg transition-all duration-300`}
+                >
+                  Tasks
+                </p>
               </NavLink>
               <NavLink
                 className={({ isActive }) =>
@@ -57,8 +69,14 @@ const SideNav = () => {
                 end
                 to={`/notes`}
               >
-                <FaNotesMedical className={`basis-auto text-lg`} />
-                <p className={`basis-auto p-0 m-0 pl-2 text-lg`}>Notes</p>
+                <FaNotesMedical
+                  className={`basis-auto transition-all duration-500 text-lg`}
+                />
+                <p
+                  className={`basis-auto p-0 m-0 pl-2 text-lg transition-all duration-300`}
+                >
+                  Notes
+                </p>
               </NavLink>
             </div>
           </div>
@@ -83,7 +101,9 @@ const SideNav = () => {
               end
               to={`/home`}
             >
-              <FaHome className={`basis-auto text-lg`} />
+              <FaHome
+                className={`basis-auto transition-all duration-500 text-lg`}
+              />
             </NavLink>
             <NavLink
               className={({ isActive }) =>
@@ -94,7 +114,9 @@ const SideNav = () => {
               end
               to={`/tasks`}
             >
-              <FaTasks className={`basis-auto text-lg`} />
+              <FaTasks
+                className={`basis-auto transition-all duration-500 text-lg`}
+              />
             </NavLink>
             <NavLink
               className={({ isActive }) =>
@@ -105,7 +127,9 @@ const SideNav = () => {
               end
               to={`/notes`}
             >
-              <FaNotesMedical className={`basis-auto text-lg`} />
+              <FaNotesMedical
+                className={`basis-auto transition-all duration-500 text-lg`}
+              />
             </NavLink>
           </div>
         </div>

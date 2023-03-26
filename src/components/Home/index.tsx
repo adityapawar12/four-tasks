@@ -92,7 +92,7 @@ const Home = () => {
       />
       <div
         className={`flex sm:flex-row flex-col mt-24 overflow-auto ${
-          sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
+          sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
         }`}
       >
         <div
@@ -120,7 +120,7 @@ const Home = () => {
 
       <div
         className={`flex sm:flex-row flex-col mt-2 ${
-          sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
+          sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
         }`}
       >
         <div
@@ -133,7 +133,7 @@ const Home = () => {
       </div>
       <div
         className={`flex sm:flex-row flex-col mt-2 ${
-          sideNavContext?.sideNav.isOpen ? "sm:ml-80" : "sm:ml-20"
+          sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
         }`}
       >
         <div
