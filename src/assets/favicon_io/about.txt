@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Noto Sans Syloti Nagri
+- Font Author: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/syloti-nagri)
+- Font Source: http://fonts.gstatic.com/s/notosanssylotinagri/v20/uU9eCAQZ75uhfF9UoWDRiY3q7Sf_VFV3m4dGFVfxN87gsj0.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
