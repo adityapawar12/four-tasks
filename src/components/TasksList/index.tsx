@@ -14,6 +14,8 @@ import { Tooltip } from "react-tooltip";
 import * as Yup from "yup";
 import { Field, Form, Formik } from "formik";
 import FormikControls from "../formik/ReusableComponents/FormikControls";
+import { motion } from "framer-motion";
+import { useTask } from "../../context/AddEditTask";
 
 type TasksFilterType = {
   fromdate: string | null;
@@ -30,6 +32,12 @@ const TasksList = () => {
   const [tasksListView, setTasksListView] = useState<TasksViewEnum>(
     TasksViewEnum.GRID
   );
+  const descriptionVariants = {
+    open: { opacity: 1, height: "auto" },
+    closed: { opacity: 0, height: 0 },
+  };
+
+  const taskProvider = useTask();
 
   const [showTaskFilterPopup, setShowTaskFilterPopup] =
     useState<boolean>(false);
@@ -109,7 +117,7 @@ const TasksList = () => {
       .catch((error) => {
         throw error;
       });
-  }, []);
+  }, [taskProvider?.isEditingTaskDone]);
 
   return (
     <>
@@ -323,54 +331,67 @@ const TasksList = () => {
         </div>
       </div>
 
-      {tasksListView === TasksViewEnum.GRID && (
-        <div
-          className={`flex sm:flex-row flex-col mt-2 ${
-            sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
-          }`}
-        >
+      <motion.div
+        className={`text-sm font-normal mt-2`}
+        animate={tasksListView === TasksViewEnum.GRID ? "open" : "closed"}
+        variants={descriptionVariants}
+      >
+        {tasksListView === TasksViewEnum.GRID && (
           <div
-            className={`basis-1/2 ${
-              sideNavContext?.sideNav.isOpen
-                ? "mx-auto sm:mx-10"
-                : "mx-auto sm:mx-40"
-            } sm:basis-full flex flex-row justify-start align-middle items-start`}
-          >
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
-              {tasksList &&
-                Array.from(tasksList!.entries()).map(([key, value]: any) => (
-                  <div className={`mb-3`} key={value.id}>
-                    <Task task={value} />
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
-      {tasksListView === TasksViewEnum.LIST && (
-        <div
-          className={`flex sm:flex-row flex-col mt-2 ${
-            sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
-          }`}
-        >
-          <div
-            className={`basis-full ${
-              sideNavContext?.sideNav.isOpen
-                ? "mx-auto sm:mx-10"
-                : "mx-auto sm:mx-40"
+            className={`flex h-fit sm:flex-row flex-col mt-2 ${
+              sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
             }`}
           >
-            <div className="mx-2">
-              {tasksList &&
-                Array.from(tasksList!.entries()).map(([key, value]: any) => (
-                  <div className={`mb-3`} key={value.id}>
-                    <Task task={value} />
-                  </div>
-                ))}
+            <div
+              className={`basis-1/2 ${
+                sideNavContext?.sideNav.isOpen
+                  ? "mx-auto sm:mx-10"
+                  : "mx-auto sm:mx-40"
+              } sm:basis-full flex flex-row justify-start align-middle items-start`}
+            >
+              <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
+                {tasksList &&
+                  Array.from(tasksList!.entries()).map(([key, value]: any) => (
+                    <div className={`mb-3 w-56`} key={value.id}>
+                      <Task task={value} />
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </motion.div>
+
+      <motion.div
+        className={`text-sm font-normal mt-2`}
+        animate={tasksListView === TasksViewEnum.LIST ? "open" : "closed"}
+        variants={descriptionVariants}
+      >
+        {tasksListView === TasksViewEnum.LIST && (
+          <div
+            className={`flex sm:flex-row flex-col mt-2 ${
+              sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
+            }`}
+          >
+            <div
+              className={`basis-full ${
+                sideNavContext?.sideNav.isOpen
+                  ? "mx-auto sm:mx-10"
+                  : "mx-auto sm:mx-40"
+              }`}
+            >
+              <div className="mx-2 h-auto">
+                {tasksList &&
+                  Array.from(tasksList!.entries()).map(([key, value]: any) => (
+                    <div className={`mb-3`} key={value.id}>
+                      <Task task={value} />
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </motion.div>
     </>
   );
 };
