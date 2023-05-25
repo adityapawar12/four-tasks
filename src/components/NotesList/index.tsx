@@ -96,7 +96,9 @@ const NotesList = () => {
       >
         <div
           className={`basis-1/2 ${
-            sideNavContext?.sideNav.isOpen ? "mx-1 sm:mx-10" : "mx-1 sm:mx-40"
+            sideNavContext?.sideNav.isOpen
+              ? "mx-1 sm:mx-10"
+              : "mx-1 sm:mx-20 md:mx-24 lg:mx-40"
           } sm:basis-full flex flex-row justify-self-stretch align-middle items-start`}
         >
           <div className={`basis-1/2 flex flex-row justify-start mx-2`}>
@@ -284,7 +286,7 @@ const NotesList = () => {
             className={`basis-1/2 ${
               sideNavContext?.sideNav.isOpen
                 ? "mx-auto sm:mx-10"
-                : "mx-auto sm:mx-40"
+                : "mx-auto sm:mx-20 md:mx-24 lg:mx-40"
             } sm:basis-full flex flex-row justify-start align-middle items-start`}
           >
             <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
@@ -308,7 +310,7 @@ const NotesList = () => {
             className={`basis-full ${
               sideNavContext?.sideNav.isOpen
                 ? "mx-auto sm:mx-10"
-                : "mx-auto sm:mx-40"
+                : "mx-auto sm:mx-20 md:mx-24 lg:mx-40"
             }`}
           >
             <div className="mx-2">
