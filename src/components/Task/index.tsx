@@ -18,7 +18,7 @@ const Task = (props: any) => {
 
   const actionVariants = {
     open: { opacity: 1, height: "1rem" },
-    closed: { opacity: 0, height: 0 },
+    closed: { opacity: 0, height: "1rem" },
   };
 
   return (
