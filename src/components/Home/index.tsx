@@ -91,12 +91,16 @@ const Home = () => {
         showFooter={false}
       />
       <div
-        className={`flex sm:flex-row flex-col mt-24 overflow-auto ${
+        className={`flex lg:flex-row flex-col mt-24 overflow-auto ${
           sideNavContext?.sideNav.isOpen ? "sm:ml-72" : "sm:ml-20"
         }`}
       >
         <div
-          className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
+          className={`basis-1/2 ${
+            sideNavContext?.sideNav.isOpen
+              ? "ml-1 sm:mx-10 md:mx-10 lg:ml-10 lg:mr-0"
+              : "mx-1 sm:mx-20 md:mx-24 lg:ml-40 lg:mr-0"
+          } sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
           <HomeTopCards tasksCount={allTopCount.allTasksCount} text={`Tasks`} />
           <HomeTopCards
@@ -105,7 +109,11 @@ const Home = () => {
           />
         </div>
         <div
-          className={`basis-1/2 sm:basis-full flex flex-row justify-center align-middle items-center`}
+          className={`basis-1/2 ${
+            sideNavContext?.sideNav.isOpen
+              ? "mr-1 sm:mx-10 md:mx-10 lg:mr-10 lg:ml-0"
+              : "mx-1 sm:mx-20 md:mx-24 lg:mr-40 lg:ml-0"
+          } sm:basis-full flex flex-row justify-center align-middle items-center`}
         >
           <HomeTopCards
             tasksCount={allTopCount.pendingTasksCount}
@@ -124,7 +132,11 @@ const Home = () => {
         }`}
       >
         <div
-          className={`basis-full flex flex-row justify-start align-middle items-start`}
+          className={`basis-full ${
+            sideNavContext?.sideNav.isOpen
+              ? "mx-1 sm:mx-10"
+              : "mx-1 sm:mx-20 md:mx-24 lg:mx-40"
+          } flex flex-row justify-start align-middle items-start`}
         >
           <h3 className={`text-lg sm:text-xl font-semibold m-2`}>
             Recent Pending Tasks
@@ -137,7 +149,11 @@ const Home = () => {
         }`}
       >
         <div
-          className={`basis-1/2 sm:basis-full flex flex-row justify-start align-middle items-start`}
+          className={`basis-1/2 ${
+            sideNavContext?.sideNav.isOpen
+              ? "mx-1 sm:mx-10"
+              : "mx-1 sm:mx-20 md:mx-24 lg:mx-40"
+          } sm:basis-full flex flex-row justify-start align-middle items-start`}
         >
           <div className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-3 lg:gap-4 mx-2">
             {tasksList &&
